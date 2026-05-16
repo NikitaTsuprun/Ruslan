@@ -1,4 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
+// Базовый путь сайта. На GitHub Pages проект открывается по под-пути (/Ruslan/),
+// он задаётся переменной NUXT_APP_BASE_URL в GitHub Actions; локально — корень.
+const baseURL = process.env.NUXT_APP_BASE_URL || '/'
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-05-16',
 
@@ -29,8 +34,8 @@ export default defineNuxtConfig({
         { name: 'format-detection', content: 'telephone=yes' },
       ],
       link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-        { rel: 'apple-touch-icon', href: '/favicon.svg' },
+        { rel: 'icon', type: 'image/svg+xml', href: `${baseURL}favicon.svg` },
+        { rel: 'apple-touch-icon', href: `${baseURL}favicon.svg` },
       ],
     },
   },

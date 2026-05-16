@@ -72,6 +72,11 @@ const bankLogo: Record<Bank, string> = {
   cb: '/logos/cb.svg',
 }
 
+// Учитываем base URL сайта (например, /Ruslan/ на GitHub Pages),
+// чтобы картинки из public/ грузились и на под-пути, и локально.
+const baseURL = useRuntimeConfig().app.baseURL
+const asset = (path: string) => baseURL.replace(/\/$/, '') + path
+
 const bankName: Record<Bank, string> = {
   tbank: 'Т-Банк',
   ozon: 'Ozon Банк',
@@ -148,7 +153,7 @@ onBeforeUnmount(() => {
             :class="{ 'chip--active': bankFilter === chip.id }"
             @click="bankFilter = chip.id"
           >
-            <img v-if="chip.id !== 'all'" class="chip__logo" :src="bankLogo[chip.id as Bank]" alt="" />
+            <img v-if="chip.id !== 'all'" class="chip__logo" :src="asset(bankLogo[chip.id as Bank])" alt="" />
             {{ chip.label }}
           </button>
         </div>
@@ -174,7 +179,7 @@ onBeforeUnmount(() => {
             :aria-label="`Открыть на весь экран: ${c.title}`"
             @click="lightbox = c"
           >
-            <img :src="c.img" :alt="c.title" loading="lazy" />
+            <img :src="asset(c.img)" :alt="c.title" loading="lazy" />
             <span class="case__zoom" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" /><path d="M16.5 16.5 21 21M11 8v6M8 11h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
             </span>
@@ -182,7 +187,7 @@ onBeforeUnmount(() => {
           <div class="case__body">
             <div class="case__tags">
               <span class="case__tag">
-                <img class="case__tag-logo" :src="bankLogo[c.bank]" alt="" />
+                <img class="case__tag-logo" :src="asset(bankLogo[c.bank])" alt="" />
                 {{ bankName[c.bank] }}
               </span>
               <span class="case__tag case__tag--type" :class="`is-${c.type}`">{{ typeName[c.type] }}</span>
@@ -205,7 +210,7 @@ onBeforeUnmount(() => {
             <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" /></svg>
           </button>
           <figure class="lb__figure" @click.stop>
-            <img :src="lightbox.img" :alt="lightbox.title" />
+            <img :src="asset(lightbox.img)" :alt="lightbox.title" />
             <figcaption class="lb__caption">{{ lightbox.title }}</figcaption>
           </figure>
         </div>

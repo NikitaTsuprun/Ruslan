@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eaf2fd"/>
+      <stop offset="0.6" stop-color="#f5f9fe"/>
+      <stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a5fc4"/>
+      <stop offset="1" stop-color="#1f86f0"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1f86f0"/>
+      <stop offset="1" stop-color="#034ea2"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1090" cy="80" r="250" fill="#d8e7fb" opacity="0.5"/>
+  <circle cx="120" cy="610" r="210" fill="#e1f1fb" opacity="0.6"/>
+  <rect width="1200" height="10" fill="#0468d6"/>
+
+  <rect x="70" y="84" width="430" height="48" rx="24" fill="#dcebfc"/>
+  <text x="94" y="115" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#0468d6" letter-spacing="1.5">ПОМОЩЬ ПО 115-ФЗ И 161-ФЗ</text>
+
+  <text x="68" y="234" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="70" font-weight="800" fill="#0b1c3a">Разблокировка</text>
+  <text x="68" y="316" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="70" font-weight="800" fill="#0b1c3a">карт и счетов</text>
+
+  <text x="70" y="372" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="27" font-weight="500" fill="#445069">Снятие блокировки, вывод из базы ЦБ&#160;РФ,</text>
+  <text x="70" y="410" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="27" font-weight="500" fill="#445069">восстановление доступа к деньгам.</text>
+
+  <circle cx="106" cy="502" r="40" fill="url(#mark)"/>
+  <text x="106" y="514" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="31" font-weight="800" fill="#ffffff" text-anchor="middle">РГ</text>
+  <text x="166" y="494" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="31" font-weight="800" fill="#0b1c3a">Руслан Ганеев</text>
+  <text x="166" y="528" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="22" font-weight="500" fill="#7b8aa3">Москва и вся Россия — дистанционно</text>
+
+  <g transform="translate(788 188) rotate(-9 170 107)">
+    <rect x="0" y="0" width="346" height="218" rx="22" fill="url(#card)"/>
+    <text x="30" y="46" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="23" font-weight="800" fill="#ffffff" letter-spacing="4">BANK</text>
+    <rect x="30" y="66" width="60" height="46" rx="9" fill="#ffe39a"/>
+    <text x="30" y="160" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="25" font-weight="600" fill="#ffffff" letter-spacing="2">5413 •••• •••• 4417</text>
+    <text x="30" y="194" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#d4e6fb" letter-spacing="2">RUSLAN GANEEV</text>
+  </g>
+
+  <circle cx="1064" cy="206" r="54" fill="#16a86b" stroke="#ffffff" stroke-width="9"/>
+  <path d="M1039 207 l17 17 l33 -36" stroke="#ffffff" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

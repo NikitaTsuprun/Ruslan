@@ -1,0 +1,447 @@
+<script setup lang="ts">
+const { contacts } = useAppConfig()
+
+const svg = (inner: string) =>
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`
+
+const methods = [
+  {
+    label: 'Телефон',
+    value: contacts.phone,
+    href: `tel:${contacts.phoneHref}`,
+    color: '#0468d6',
+    icon: svg('<path d="M5 4h3l1.7 4.2-2.1 1.6a13 13 0 0 0 6.6 6.6l1.6-2.1L21 16v3a2 2 0 0 1-2.2 2A17.5 17.5 0 0 1 3 5.2 2 2 0 0 1 5 4z"/>'),
+  },
+  {
+    label: 'Telegram',
+    value: 'Написать в Telegram',
+    href: contacts.telegram,
+    color: '#29a9eb',
+    icon: svg('<path d="M21 4 3 10.7l6.3 2.3M21 4l-3.4 15.3-5.7-4.3M21 4 9.3 13v6l3-3.1"/>'),
+  },
+  {
+    label: 'MAX',
+    value: 'Написать в MAX',
+    href: contacts.max,
+    color: '#574ef0',
+    icon: svg('<path d="M4 5.5h16A1.5 1.5 0 0 1 21.5 7v8a1.5 1.5 0 0 1-1.5 1.5H9.5L5 20.5v-4H4A1.5 1.5 0 0 1 2.5 15V7A1.5 1.5 0 0 1 4 5.5z"/><circle cx="8.5" cy="11" r="1.05" fill="currentColor" stroke="none"/><circle cx="12" cy="11" r="1.05" fill="currentColor" stroke="none"/><circle cx="15.5" cy="11" r="1.05" fill="currentColor" stroke="none"/>'),
+  },
+  {
+    label: 'WhatsApp',
+    value: 'Написать в WhatsApp',
+    href: contacts.whatsapp,
+    color: '#1fb855',
+    icon: svg('<path d="M3.8 20.2 5 16a8.4 8.4 0 1 1 3.3 3l-4.5 1.2z"/><path d="M9 9.3c.5 2.2 3.5 5.2 5.7 5.6"/>'),
+  },
+  {
+    label: 'ВКонтакте',
+    value: 'Профиль ВКонтакте',
+    href: contacts.vk,
+    color: '#0077ff',
+    icon: svg('<rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M7 9.2c.3 3.2 2.3 5.6 5 5.8M12 15v-3.4c1.6 0 3 1.4 3.4 3.4M12 11.6c1.6 0 2.9-1.2 3.2-2.8"/>'),
+  },
+  {
+    label: 'Электронная почта',
+    value: contacts.email,
+    href: `mailto:${contacts.email}`,
+    color: '#e07c45',
+    icon: svg('<rect x="3" y="5" width="18" height="14" rx="2.6"/><path d="M3.7 6.6 12 12.4l8.3-5.8"/>'),
+  },
+]
+
+const ways = ['Телефон', 'Telegram', 'WhatsApp', 'MAX', 'ВКонтакте']
+
+const form = reactive({
+  name: '',
+  phone: '',
+  way: '',
+  bank: '',
+  message: '',
+  consent: false,
+  company: '', // honeypot — поле-ловушка для спам-ботов
+})
+
+const errors = reactive<{ name: string; phone: string; consent: string }>({
+  name: '',
+  phone: '',
+  consent: '',
+})
+
+const loading = ref(false)
+const sent = ref(false)
+const serverError = ref('')
+
+function validate() {
+  errors.name = form.name.trim().length >= 2 ? '' : 'Укажите, как к вам обращаться'
+  errors.phone =
+    form.phone.replace(/\D/g, '').length >= 10 ? '' : 'Укажите корректный номер телефона'
+  errors.consent = form.consent ? '' : 'Подтвердите согласие на обработку данных'
+  return !errors.name && !errors.phone && !errors.consent
+}
+
+async function submit() {
+  serverError.value = ''
+  if (!validate()) return
+  loading.value = true
+  try {
+    const res = await $fetch<{ ok: boolean; message?: string }>('/api/contact', {
+      method: 'POST',
+      body: {
+        name: form.name,
+        phone: form.phone,
+        way: form.way,
+        bank: form.bank,
+        message: form.message,
+        company: form.company,
+      },
+    })
+    if (res?.ok) {
+      sent.value = true
+    } else {
+      serverError.value =
+        res?.message ||
+        'Не удалось отправить заявку. Попробуйте ещё раз или свяжитесь по телефону.'
+    }
+  } catch {
+    serverError.value =
+      'Не удалось отправить заявку. Проверьте соединение или свяжитесь по телефону.'
+  } finally {
+    loading.value = false
+  }
+}
+
+function resetForm() {
+  Object.assign(form, {
+    name: '',
+    phone: '',
+    way: '',
+    bank: '',
+    message: '',
+    consent: false,
+    company: '',
+  })
+  errors.name = errors.phone = errors.consent = ''
+  serverError.value = ''
+  sent.value = false
+}
+</script>
+
+<template>
+  <section id="kontakty" class="section section--soft contact">
+    <div class="contact__glow" aria-hidden="true" />
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Контакты</p>
+        <h2 class="section-title">Получите бесплатную консультацию</h2>
+        <p class="section-subtitle">
+          Опишите ситуацию любым удобным способом — отвечу, оценю перспективы
+          и подскажу, как вернуть доступ к вашим деньгам.
+        </p>
+      </div>
+
+      <div class="contact__layout">
+        <div class="contact__info">
+          <h3 class="contact__info-title">Свяжитесь удобным способом</h3>
+          <p class="contact__info-text">
+            Первичная консультация — бесплатно и ни к чему не обязывает.
+          </p>
+
+          <ul class="methods">
+            <li v-for="m in methods" :key="m.label">
+              <a
+                class="method"
+                :href="m.href"
+                :style="{ '--c': m.color }"
+                :target="m.href.startsWith('http') ? '_blank' : null"
+                :rel="m.href.startsWith('http') ? 'noopener' : null"
+              >
+                <span class="method__ic" v-html="m.icon" />
+                <span class="method__body">
+                  <b>{{ m.label }}</b>
+                  <span>{{ m.value }}</span>
+                </span>
+                <svg class="method__arrow" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </a>
+            </li>
+          </ul>
+
+          <div class="contact__meta">
+            <div class="contact__meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.7-7-11a7 7 0 0 1 14 0c0 5.3-7 11-7 11z" /><circle cx="12" cy="10" r="2.6" /></svg>
+              <span>{{ contacts.city }} и вся Россия — дистанционно</span>
+            </div>
+            <div class="contact__meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5.3l3.4 2" /></svg>
+              <span>{{ contacts.schedule }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <form v-if="!sent" class="form" novalidate @submit.prevent="submit">
+            <h3 class="form__title">Оставить заявку на разблокировку</h3>
+            <p class="form__sub">Заполните форму — свяжусь с вами в ближайшее время.</p>
+
+            <div class="hp" aria-hidden="true">
+              <label>Не заполняйте это поле
+                <input v-model="form.company" type="text" tabindex="-1" autocomplete="off" />
+              </label>
+            </div>
+
+            <div class="field">
+              <label for="f-name">Ваше имя <span>*</span></label>
+              <input
+                id="f-name"
+                v-model="form.name"
+                type="text"
+                autocomplete="name"
+                placeholder="Как к вам обращаться"
+                :class="{ 'is-error': errors.name }"
+              />
+              <span v-if="errors.name" class="field__err">{{ errors.name }}</span>
+            </div>
+
+            <div class="field">
+              <label for="f-phone">Телефон <span>*</span></label>
+              <input
+                id="f-phone"
+                v-model="form.phone"
+                type="tel"
+                inputmode="tel"
+                autocomplete="tel"
+                placeholder="+7 (___) ___-__-__"
+                :class="{ 'is-error': errors.phone }"
+              />
+              <span v-if="errors.phone" class="field__err">{{ errors.phone }}</span>
+            </div>
+
+            <div class="field">
+              <label for="f-way">Удобный способ связи</label>
+              <select id="f-way" v-model="form.way" class="select">
+                <option value="">Не важно</option>
+                <option v-for="w in ways" :key="w" :value="w">{{ w }}</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="f-bank">Ваш банк</label>
+              <input
+                id="f-bank"
+                v-model="form.bank"
+                type="text"
+                placeholder="Например: Сбербанк, Т-Банк, ВТБ"
+              />
+            </div>
+
+            <div class="field">
+              <label for="f-msg">Опишите ситуацию</label>
+              <textarea
+                id="f-msg"
+                v-model="form.message"
+                rows="4"
+                placeholder="Что произошло с картой или счётом, какой банк, что требует банк"
+              />
+            </div>
+
+            <label class="consent" :class="{ 'is-error': errors.consent }">
+              <input v-model="form.consent" type="checkbox" />
+              <span>Я согласен на обработку персональных данных для ответа на заявку.</span>
+            </label>
+            <span v-if="errors.consent" class="field__err field__err--block">{{ errors.consent }}</span>
+
+            <button type="submit" class="btn btn--primary btn--block btn--lg" :disabled="loading">
+              <template v-if="loading">Отправляем…</template>
+              <template v-else>
+                Отправить заявку
+                <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </template>
+            </button>
+
+            <p v-if="serverError" class="form__status form__status--err">{{ serverError }}</p>
+
+            <p class="form__note">
+              Отправляя заявку, вы соглашаетесь с обработкой персональных данных.
+              Консультация бесплатна и ни к чему не обязывает.
+            </p>
+          </form>
+
+          <div v-else class="form-success">
+            <span class="form-success__ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </span>
+            <h3>Заявка отправлена!</h3>
+            <p>
+              Спасибо за обращение. Я свяжусь с вами в ближайшее время —
+              как правило, в течение рабочего дня.
+            </p>
+            <button type="button" class="btn btn--outline" @click="resetForm">
+              Отправить ещё одну заявку
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<style scoped>
+.contact { position: relative; overflow: hidden; }
+.contact__glow {
+  position: absolute;
+  top: -120px; right: -100px;
+  width: 460px; height: 460px;
+  background: radial-gradient(circle, #dbe9fb, transparent 68%);
+  pointer-events: none;
+}
+.contact__layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+}
+
+.contact__info-title { font-size: 21px; margin-bottom: 6px; }
+.contact__info-text { font-size: 15px; color: var(--muted); margin-bottom: 20px; }
+
+.methods { display: grid; gap: 11px; }
+.method {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+.method:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  border-color: color-mix(in srgb, var(--c) 45%, var(--border));
+}
+.method__ic {
+  width: 46px; height: 46px; flex: none;
+  display: grid; place-items: center;
+  border-radius: 12px;
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 12%, #fff);
+}
+.method__ic :deep(svg) { width: 24px; height: 24px; }
+.method__body { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.method__body b { font-size: 15px; color: var(--ink); }
+.method__body span { font-size: 13.5px; color: var(--muted); }
+.method__arrow { width: 18px; height: 18px; color: var(--muted); flex: none; }
+.method:hover .method__arrow { color: var(--c); }
+
+.contact__meta {
+  margin-top: 20px;
+  display: grid;
+  gap: 11px;
+  padding: 16px 18px;
+  background: var(--blue-50);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.contact__meta-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14.5px; font-weight: 600; color: var(--ink);
+}
+.contact__meta-item svg { width: 21px; height: 21px; flex: none; color: var(--blue-600); }
+
+/* Карточка формы */
+.form-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 26px 22px;
+}
+.form__title { font-size: 21px; margin-bottom: 5px; }
+.form__sub { font-size: 14.5px; color: var(--muted); margin-bottom: 20px; }
+
+.hp { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+.field { margin-bottom: 15px; display: flex; flex-direction: column; }
+.field label { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 7px; }
+.field label span { color: #e5484d; }
+.field input,
+.field textarea,
+.select {
+  width: 100%;
+  font-size: 16px;
+  padding: 13px 14px;
+  border: 1.6px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: #fff;
+  color: var(--ink);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.field textarea { resize: vertical; min-height: 96px; }
+.field input::placeholder,
+.field textarea::placeholder { color: #aab5c6; }
+.field input:focus,
+.field textarea:focus,
+.select:focus {
+  outline: none;
+  border-color: var(--blue-500);
+  box-shadow: 0 0 0 4px rgba(31, 134, 240, .14);
+}
+.field input.is-error,
+.field textarea.is-error { border-color: #e5484d; }
+.select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%237b8aa3' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 8l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 13px center;
+  padding-right: 40px;
+}
+.field__err { font-size: 12.5px; color: #e5484d; margin-top: 5px; font-weight: 600; }
+.field__err--block { display: block; margin-top: -6px; margin-bottom: 8px; }
+
+.consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 4px 0 16px;
+  cursor: pointer;
+}
+.consent input {
+  width: 19px; height: 19px; flex: none; margin-top: 1px;
+  accent-color: var(--blue-600); cursor: pointer;
+}
+.consent span { font-size: 13px; color: var(--text); }
+.consent.is-error span { color: #e5484d; }
+
+.form__status {
+  margin-top: 13px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 12px 14px;
+  border-radius: var(--radius-xs);
+}
+.form__status--err { background: #fdecec; color: #c0353a; }
+.form__note { margin-top: 13px; font-size: 12px; color: var(--muted); }
+
+.form-success { text-align: center; padding: 22px 6px; }
+.form-success__ic {
+  width: 72px; height: 72px;
+  margin: 0 auto 18px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: #e3f6ed;
+  color: var(--green);
+}
+.form-success__ic svg { width: 36px; height: 36px; }
+.form-success h3 { font-size: 22px; margin-bottom: 10px; }
+.form-success p { font-size: 15px; color: var(--text); margin-bottom: 20px; }
+
+@media (min-width: 980px) {
+  .contact__layout {
+    grid-template-columns: 0.92fr 1.08fr;
+    gap: 30px;
+    align-items: start;
+  }
+  .form-card { padding: 32px 30px; }
+}
+</style>

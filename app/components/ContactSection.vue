@@ -49,6 +49,9 @@ const methods = [
   },
 ]
 
+const sectionRef = ref<HTMLElement | null>(null)
+useScrollAnimation(sectionRef, { mode: 'stagger-children', stagger: 0.1 })
+
 const ways = ['Телефон', 'Telegram', 'WhatsApp', 'MAX', 'ВКонтакте']
 
 const form = reactive({
@@ -127,10 +130,10 @@ function resetForm() {
 </script>
 
 <template>
-  <section id="kontakty" class="section section--soft contact">
+  <section id="kontakty" ref="sectionRef" class="section section--soft contact scroll-animate scroll-animate--stagger-children">
     <div class="contact__glow" aria-hidden="true" />
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" data-reveal-item>
         <p class="eyebrow">Контакты</p>
         <h2 class="section-title">Получите бесплатную консультацию</h2>
         <p class="section-subtitle">
@@ -140,7 +143,7 @@ function resetForm() {
       </div>
 
       <div class="contact__layout">
-        <div class="contact__info">
+        <div class="contact__info" data-reveal-item data-scroll-mode="fade-left">
           <h3 class="contact__info-title">Свяжитесь удобным способом</h3>
           <p class="contact__info-text">
             Первичная консультация — бесплатно и ни к чему не обязывает.
@@ -177,7 +180,7 @@ function resetForm() {
           </div>
         </div>
 
-        <div class="form-card">
+        <div class="form-card" data-reveal-item data-scroll-mode="fade-right">
           <form v-if="!sent" class="form" novalidate @submit.prevent="submit">
             <h3 class="form__title">Оставить заявку на разблокировку</h3>
             <p class="form__sub">Заполните форму — свяжусь с вами в ближайшее время.</p>
@@ -292,6 +295,7 @@ function resetForm() {
   width: 460px; height: 460px;
   background: radial-gradient(circle, #dbe9fb, transparent 68%);
   pointer-events: none;
+  animation: contactGlow 8s ease-in-out infinite;
 }
 .contact__layout {
   position: relative;
@@ -312,12 +316,17 @@ function resetForm() {
   background: #fff;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  transition:
+    transform .3s cubic-bezier(.22, 1, .36, 1),
+    box-shadow .3s ease,
+    border-color .3s ease,
+    background .3s ease;
 }
 .method:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
   box-shadow: var(--shadow-sm);
   border-color: color-mix(in srgb, var(--c) 45%, var(--border));
+  background: color-mix(in srgb, var(--c) 5%, #fff);
 }
 .method__ic {
   width: 46px; height: 46px; flex: none;
@@ -325,13 +334,18 @@ function resetForm() {
   border-radius: 12px;
   color: var(--c);
   background: color-mix(in srgb, var(--c) 12%, #fff);
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1), background .3s ease;
 }
 .method__ic :deep(svg) { width: 24px; height: 24px; }
+.method:hover .method__ic { transform: scale(1.05); background: color-mix(in srgb, var(--c) 17%, #fff); }
 .method__body { display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .method__body b { font-size: 15px; color: var(--ink); }
 .method__body span { font-size: 13.5px; color: var(--muted); }
-.method__arrow { width: 18px; height: 18px; color: var(--muted); flex: none; }
-.method:hover .method__arrow { color: var(--c); }
+.method__arrow {
+  width: 18px; height: 18px; color: var(--muted); flex: none;
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1), color .3s ease;
+}
+.method:hover .method__arrow { color: var(--c); transform: translateX(3px); }
 
 .contact__meta {
   margin-top: 20px;
@@ -355,7 +369,9 @@ function resetForm() {
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
   padding: 26px 22px;
+  transition: transform .34s cubic-bezier(.22, 1, .36, 1), box-shadow .34s ease;
 }
+.form-card:hover { transform: translateY(-4px); box-shadow: 0 34px 68px rgba(6, 40, 90, .18); }
 .form__title { font-size: 21px; margin-bottom: 5px; }
 .form__sub { font-size: 14.5px; color: var(--muted); margin-bottom: 20px; }
 
@@ -435,6 +451,11 @@ function resetForm() {
 .form-success__ic svg { width: 36px; height: 36px; }
 .form-success h3 { font-size: 22px; margin-bottom: 10px; }
 .form-success p { font-size: 15px; color: var(--text); margin-bottom: 20px; }
+
+@keyframes contactGlow {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: .75; }
+  50% { transform: translate3d(-18px, 18px, 0) scale(1.04); opacity: .95; }
+}
 
 @media (min-width: 980px) {
   .contact__layout {

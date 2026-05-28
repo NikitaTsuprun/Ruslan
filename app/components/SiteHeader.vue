@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { useWindowScroll } from '@vueuse/core'
+
 const { contacts } = useAppConfig()
 
 const open = ref(false)
-const scrolled = ref(false)
+const { y } = useWindowScroll()
+const scrolled = computed(() => y.value > 80)
 
 const links = [
   { href: '#uslugi', label: 'Услуги' },
@@ -17,20 +20,11 @@ function close() {
   open.value = false
 }
 
-function onScroll() {
-  scrolled.value = window.scrollY > 8
-}
-
 watch(open, (v) => {
   if (import.meta.client) document.body.style.overflow = v ? 'hidden' : ''
 })
 
-onMounted(() => {
-  onScroll()
-  window.addEventListener('scroll', onScroll, { passive: true })
-})
 onBeforeUnmount(() => {
-  window.removeEventListener('scroll', onScroll)
   if (import.meta.client) document.body.style.overflow = ''
 })
 </script>
@@ -96,9 +90,14 @@ onBeforeUnmount(() => {
   background: rgba(255, 255, 255, .95);
   backdrop-filter: saturate(180%) blur(10px);
   border-bottom: 1px solid var(--border);
-  transition: box-shadow .25s ease;
+  transition: background .3s ease, box-shadow .3s ease, border-color .3s ease;
+  animation: headerIn .58s cubic-bezier(.22, 1, .36, 1) both;
 }
-.hdr--scrolled { box-shadow: 0 6px 24px rgba(11, 28, 58, .08); }
+.hdr--scrolled {
+  background: rgba(255, 255, 255, .88);
+  border-color: rgba(228, 235, 244, .78);
+  box-shadow: 0 8px 28px rgba(11, 28, 58, .09);
+}
 .hdr__inner {
   display: flex;
   align-items: center;
@@ -114,8 +113,10 @@ onBeforeUnmount(() => {
   background: linear-gradient(150deg, var(--blue-500), var(--blue-700));
   border-radius: 11px;
   box-shadow: 0 6px 16px rgba(4, 104, 214, .32);
+  transition: transform .28s cubic-bezier(.22, 1, .36, 1), box-shadow .28s ease;
 }
 .brand__mark svg { width: 26px; height: 26px; }
+.brand:hover .brand__mark { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(4, 104, 214, .36); }
 .brand__text { display: flex; flex-direction: column; line-height: 1.15; }
 .brand__name { font-weight: 800; font-size: 16px; color: var(--ink); letter-spacing: -.01em; }
 .brand__sub { font-size: 11.5px; color: var(--muted); }
@@ -165,8 +166,10 @@ onBeforeUnmount(() => {
   box-shadow: 0 24px 40px rgba(11, 28, 58, .14);
   padding: 14px 20px 22px;
   display: flex; flex-direction: column; gap: 4px;
+  min-height: calc(100dvh - 70px);
   max-height: calc(100dvh - 70px);
   overflow-y: auto;
+  will-change: opacity, transform;
 }
 .mnav__link {
   font-size: 17px; font-weight: 600; color: var(--ink);
@@ -177,8 +180,13 @@ onBeforeUnmount(() => {
   padding: 14px 8px 16px;
 }
 
-.mnav-enter-active, .mnav-leave-active { transition: opacity .2s ease, transform .2s ease; }
-.mnav-enter-from, .mnav-leave-to { opacity: 0; transform: translateY(-10px); }
+.mnav-enter-active, .mnav-leave-active { transition: opacity .28s ease, transform .28s cubic-bezier(.22, 1, .36, 1); }
+.mnav-enter-from, .mnav-leave-to { opacity: 0; transform: translateY(-14px); }
+
+@keyframes headerIn {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 @media (min-width: 960px) {
   .hdr__nav, .hdr__actions { display: flex; }

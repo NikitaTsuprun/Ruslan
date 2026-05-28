@@ -26,12 +26,15 @@ const reviews = [
     text: 'Банк ограничил онлайн-банк, я не могла оплачивать вообще ничего. Руслан спокойно всё объяснил и довёл дело до результата. Рекомендую за честность и поддержку.',
   },
 ]
+
+const sectionRef = ref<HTMLElement | null>(null)
+useScrollAnimation(sectionRef, { mode: 'stagger-children', stagger: 0.11 })
 </script>
 
 <template>
-  <section id="otzyvy" class="section section--soft reviews">
+  <section id="otzyvy" ref="sectionRef" class="section section--soft reviews scroll-animate scroll-animate--stagger-children">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" data-reveal-item>
         <p class="eyebrow">Отзывы</p>
         <h2 class="section-title">Что говорят клиенты</h2>
         <p class="section-subtitle">
@@ -41,7 +44,13 @@ const reviews = [
       </div>
 
       <div class="reviews__grid">
-        <figure v-for="r in reviews" :key="r.name" class="review">
+        <figure
+          v-for="(r, index) in reviews"
+          :key="r.name"
+          class="review"
+          :data-scroll-mode="index % 2 === 0 ? 'fade-left' : 'fade-right'"
+          data-reveal-item
+        >
           <span class="review__quote" aria-hidden="true">”</span>
           <div class="review__stars" aria-label="Оценка 5 из 5">
             <svg v-for="n in 5" :key="n" viewBox="0 0 24 24" aria-hidden="true">
@@ -75,9 +84,18 @@ const reviews = [
   border-radius: var(--radius);
   padding: 26px 24px 22px;
   overflow: hidden;
-  transition: transform .2s ease, box-shadow .2s ease;
+  transition:
+    transform .32s cubic-bezier(.22, 1, .36, 1),
+    box-shadow .32s ease,
+    border-color .32s ease,
+    background .32s ease;
 }
-.review:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.review:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow);
+  border-color: var(--blue-400);
+  background: linear-gradient(180deg, #fff 0%, #f9fcff 100%);
+}
 .review__quote {
   position: absolute;
   top: -22px; right: 14px;
@@ -85,7 +103,9 @@ const reviews = [
   font-family: Georgia, 'Times New Roman', serif;
   color: var(--blue-100);
   pointer-events: none;
+  transition: transform .32s cubic-bezier(.22, 1, .36, 1), color .32s ease;
 }
+.review:hover .review__quote { transform: translateY(6px) rotate(2deg); color: #d4e5fb; }
 .review__stars { display: flex; gap: 3px; margin-bottom: 13px; }
 .review__stars svg { width: 19px; height: 19px; }
 .review__text {
@@ -102,7 +122,9 @@ const reviews = [
   background: var(--blue-100);
   color: var(--blue-700);
   font-weight: 800; font-size: 18px;
+  transition: transform .32s cubic-bezier(.22, 1, .36, 1), background .32s ease;
 }
+.review:hover .review__avatar { transform: scale(1.05); background: #d8e9ff; }
 .review__name { display: block; font-size: 15.5px; color: var(--ink); }
 .review__meta { font-size: 13px; color: var(--muted); }
 

@@ -9,12 +9,15 @@ const problems = [
   'Заблокирован расчётный счёт ИП или ООО — бизнес не может работать',
   'Подозрение в «дроперстве», реквизиты попали в стоп-лист банка',
 ]
+
+const sectionRef = ref<HTMLElement | null>(null)
+useScrollAnimation(sectionRef, { mode: 'fade-up', stagger: 0.08 })
 </script>
 
 <template>
-  <section class="section section--soft problems">
+  <section ref="sectionRef" class="section section--soft problems scroll-animate scroll-animate--fade-up">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" data-reveal-item>
         <p class="eyebrow">Когда нужна помощь</p>
         <h2 class="section-title">Помогу, если вы столкнулись с блокировкой</h2>
         <p class="section-subtitle">
@@ -24,7 +27,7 @@ const problems = [
       </div>
 
       <ul class="problems__grid">
-        <li v-for="p in problems" :key="p" class="problem">
+        <li v-for="p in problems" :key="p" class="problem" data-reveal-item>
           <span class="problem__ic" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
               <rect x="4.5" y="10.5" width="15" height="9.5" rx="2.2" />
@@ -35,7 +38,7 @@ const problems = [
         </li>
       </ul>
 
-      <div class="problems__cta">
+      <div class="problems__cta" data-reveal-item>
         <p>Не нашли свой случай? Опишите ситуацию — честно скажу, реально ли помочь.</p>
         <a href="#kontakty" class="btn btn--primary btn--lg">Описать мою ситуацию</a>
       </div>
@@ -57,17 +60,28 @@ const problems = [
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 16px 18px;
-  transition: transform .18s ease, box-shadow .18s ease;
+  transition:
+    transform .3s cubic-bezier(.22, 1, .36, 1),
+    box-shadow .3s ease,
+    border-color .3s ease,
+    background .3s ease;
 }
-.problem:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); }
+.problem:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-sm);
+  border-color: #f3c37e;
+  background: linear-gradient(180deg, #fff 0%, #fffaf3 100%);
+}
 .problem__ic {
   width: 44px; height: 44px; flex: none;
   display: grid; place-items: center;
   border-radius: 11px;
   background: #fdeed7;
   color: #d98a23;
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1);
 }
 .problem__ic svg { width: 23px; height: 23px; }
+.problem:hover .problem__ic { transform: scale(1.04) rotate(-2deg); }
 .problem__text { font-size: 15px; font-weight: 600; color: var(--ink); }
 
 .problems__cta {

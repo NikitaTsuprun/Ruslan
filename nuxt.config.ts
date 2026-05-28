@@ -59,6 +59,10 @@ export default defineNuxtConfig({
     urls: ['/'],
   },
 
+  robots: {
+    robotsTxt: baseURL === '/',
+  },
+
   nitro: {
     compressPublicAssets: true,
   },

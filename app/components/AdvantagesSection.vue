@@ -40,12 +40,15 @@ const facts = [
   { strong: 'Москва + вся РФ', sub: 'личный приём и работа онлайн' },
   { strong: 'Лично', sub: 'веду каждое дело от и до' },
 ]
+
+const sectionRef = ref<HTMLElement | null>(null)
+useScrollAnimation(sectionRef, { mode: 'scale-in', stagger: 0.1 })
 </script>
 
 <template>
-  <section id="preimuschestva" class="section section--soft adv">
+  <section id="preimuschestva" ref="sectionRef" class="section section--soft adv scroll-animate scroll-animate--scale-in">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" data-reveal-item>
         <p class="eyebrow">Почему обращаются ко мне</p>
         <h2 class="section-title">Решаю вопрос с блокировкой под ключ</h2>
         <p class="section-subtitle">
@@ -55,7 +58,7 @@ const facts = [
       </div>
 
       <div class="adv__layout">
-        <aside class="expert">
+        <aside class="expert" data-reveal-item data-scroll-mode="scale-in">
           <div class="expert__head">
             <div class="expert__avatar" aria-hidden="true">РГ</div>
             <div>
@@ -78,7 +81,7 @@ const facts = [
         </aside>
 
         <ul class="adv__list">
-          <li v-for="a in advantages" :key="a.title" class="adv__item">
+          <li v-for="a in advantages" :key="a.title" class="adv__item" data-reveal-item data-scroll-mode="scale-in">
             <span class="adv__ic" v-html="a.icon" />
             <div>
               <h3 class="adv__title">{{ a.title }}</h3>
@@ -104,7 +107,9 @@ const facts = [
   border-radius: var(--radius);
   padding: 26px 24px;
   box-shadow: var(--shadow-sm);
+  transition: transform .32s cubic-bezier(.22, 1, .36, 1), box-shadow .32s ease;
 }
+.expert:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
 .expert__head { display: flex; align-items: center; gap: 15px; margin-bottom: 16px; }
 .expert__avatar {
   width: 76px; height: 76px; flex: none;
@@ -113,7 +118,9 @@ const facts = [
   background: linear-gradient(150deg, var(--blue-500), var(--blue-700));
   color: #fff; font-size: 26px; font-weight: 800; letter-spacing: .02em;
   box-shadow: 0 10px 22px rgba(4, 104, 214, .34);
+  transition: transform .32s cubic-bezier(.22, 1, .36, 1);
 }
+.expert:hover .expert__avatar { transform: scale(1.04) rotate(-2deg); }
 .expert__name { font-size: 21px; font-weight: 800; color: var(--ink); }
 .expert__role { font-size: 14px; color: var(--blue-600); font-weight: 600; }
 .expert__bio { font-size: 15px; color: var(--text); margin-bottom: 18px; }
@@ -131,17 +138,28 @@ const facts = [
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 19px 20px;
-  transition: transform .18s ease, box-shadow .18s ease;
+  transition:
+    transform .3s cubic-bezier(.22, 1, .36, 1),
+    box-shadow .3s ease,
+    border-color .3s ease,
+    background .3s ease;
 }
-.adv__item:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); }
+.adv__item:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--blue-400);
+  background: linear-gradient(180deg, #fff 0%, #f8fbff 100%);
+}
 .adv__ic {
   width: 48px; height: 48px; flex: none;
   display: grid; place-items: center;
   border-radius: 12px;
   background: var(--blue-100);
   color: var(--blue-600);
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1), background .3s ease, color .3s ease;
 }
 .adv__ic :deep(svg) { width: 25px; height: 25px; }
+.adv__item:hover .adv__ic { transform: translateY(-2px) scale(1.05); background: var(--blue-600); color: #fff; }
 .adv__title { font-size: 17px; margin-bottom: 5px; }
 .adv__text { font-size: 14.5px; color: var(--text); }
 

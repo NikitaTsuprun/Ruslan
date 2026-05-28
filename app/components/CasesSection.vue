@@ -115,6 +115,9 @@ const filtered = computed(() =>
 )
 
 const lightbox = ref<CaseItem | null>(null)
+const sectionRef = ref<HTMLElement | null>(null)
+
+useScrollAnimation(sectionRef, { mode: 'scale-in', stagger: 0.12 })
 
 function onKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') lightbox.value = null
@@ -132,9 +135,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section id="keysy" class="section cases">
+  <section id="keysy" ref="sectionRef" class="section cases scroll-animate scroll-animate--scale-in">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" data-reveal-item>
         <p class="eyebrow">Кейсы</p>
         <h2 class="section-title">Документально подтверждённые результаты</h2>
         <p class="section-subtitle">
@@ -143,7 +146,7 @@ onBeforeUnmount(() => {
         </p>
       </div>
 
-      <div class="cases__filters">
+      <div class="cases__filters" data-reveal-item>
         <div class="filter-row" role="group" aria-label="Фильтр по банку">
           <button
             v-for="chip in bankChips"
@@ -171,8 +174,8 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div v-if="filtered.length" class="cases__grid">
-        <article v-for="c in filtered" :key="c.img" class="case">
+      <TransitionGroup v-if="filtered.length" name="case-list" tag="div" class="cases__grid">
+        <article v-for="c in filtered" :key="c.img" class="case" data-reveal-item data-scroll-mode="scale-in">
           <button
             type="button"
             class="case__media"
@@ -196,9 +199,9 @@ onBeforeUnmount(() => {
             <p class="case__text">{{ c.text }}</p>
           </div>
         </article>
-      </div>
+      </TransitionGroup>
 
-      <p v-else class="cases__empty">
+      <p v-else class="cases__empty" data-reveal-item>
         По выбранным фильтрам кейсов пока нет — выберите другой банк или тип дела.
       </p>
     </div>
@@ -237,9 +240,15 @@ onBeforeUnmount(() => {
   background: #fff;
   border: 1.6px solid var(--border);
   border-radius: 100px;
-  transition: background .15s ease, border-color .15s ease, color .15s ease, transform .12s ease;
+  transition:
+    background .24s ease,
+    border-color .24s ease,
+    color .24s ease,
+    transform .24s cubic-bezier(.22, 1, .36, 1),
+    box-shadow .24s ease;
 }
-.chip:hover { border-color: var(--blue-400); transform: translateY(-1px); }
+.chip:hover { border-color: var(--blue-400); transform: translateY(-2px); box-shadow: var(--shadow-xs); }
+.chip:active { transform: translateY(0) scale(.97); }
 .chip--active {
   background: var(--blue-600);
   border-color: var(--blue-600);
@@ -249,6 +258,7 @@ onBeforeUnmount(() => {
 
 /* Сетка кейсов */
 .cases__grid {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr;
   gap: 20px;
@@ -260,9 +270,12 @@ onBeforeUnmount(() => {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
-  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  transition:
+    transform .34s cubic-bezier(.22, 1, .36, 1),
+    box-shadow .34s ease,
+    border-color .34s ease;
 }
-.case:hover { transform: translateY(-5px); box-shadow: var(--shadow); border-color: var(--blue-400); }
+.case:hover { transform: translateY(-7px); box-shadow: 0 24px 48px rgba(11, 28, 58, .13); border-color: var(--blue-400); }
 
 .case__media {
   display: block;
@@ -278,9 +291,9 @@ onBeforeUnmount(() => {
   width: 100%; height: 100%;
   object-fit: cover;
   object-position: top center;
-  transition: transform .35s ease;
+  transition: transform .5s cubic-bezier(.22, 1, .36, 1);
 }
-.case:hover .case__media img { transform: scale(1.04); }
+.case:hover .case__media img { transform: scale(1.055); }
 .case__zoom {
   position: absolute;
   top: 12px; right: 12px;
@@ -290,9 +303,9 @@ onBeforeUnmount(() => {
   background: rgba(11, 28, 58, .62);
   color: #fff;
   backdrop-filter: blur(3px);
-  transition: background .15s ease;
+  transition: background .24s ease, transform .24s ease;
 }
-.case__media:hover .case__zoom { background: var(--blue-600); }
+.case__media:hover .case__zoom { background: var(--blue-600); transform: scale(1.05); }
 .case__zoom svg { width: 20px; height: 20px; }
 
 .case__body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 9px; }
@@ -370,6 +383,18 @@ onBeforeUnmount(() => {
 .lb-enter-from, .lb-leave-to { opacity: 0; }
 .lb-enter-active .lb__figure, .lb-leave-active .lb__figure { transition: transform .25s ease; }
 .lb-enter-from .lb__figure, .lb-leave-to .lb__figure { transform: scale(.94); }
+
+.case-list-enter-active,
+.case-list-leave-active,
+.case-list-move {
+  transition: opacity .3s ease, transform .3s cubic-bezier(.22, 1, .36, 1);
+}
+.case-list-enter-from,
+.case-list-leave-to {
+  opacity: 0;
+  transform: translateY(16px) scale(.98);
+}
+.case-list-leave-active { position: absolute; }
 
 @media (min-width: 640px) {
   .cases__grid { grid-template-columns: repeat(2, 1fr); gap: 22px; }

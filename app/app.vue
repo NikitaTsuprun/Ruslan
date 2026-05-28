@@ -190,6 +190,7 @@ useHead({
 
 <template>
   <div class="page">
+    <AppPreloader />
     <SiteHeader />
     <main>
       <HeroSection />

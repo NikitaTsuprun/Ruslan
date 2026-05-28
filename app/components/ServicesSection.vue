@@ -34,12 +34,15 @@ const services = [
     text: 'Разбираю вашу ситуацию, составляю пошаговый план, помогаю с перепиской с банком и жалобами в ЦБ РФ и межведомственную комиссию.',
   },
 ]
+
+const sectionRef = ref<HTMLElement | null>(null)
+useScrollAnimation(sectionRef, { mode: 'fade-up', stagger: 0.1 })
 </script>
 
 <template>
-  <section id="uslugi" class="section services">
+  <section id="uslugi" ref="sectionRef" class="section services scroll-animate scroll-animate--fade-up">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" data-reveal-item>
         <p class="eyebrow">Услуги</p>
         <h2 class="section-title">Чем я помогаю</h2>
         <p class="section-subtitle">
@@ -49,7 +52,7 @@ const services = [
       </div>
 
       <div class="services__grid">
-        <article v-for="s in services" :key="s.title" class="svc">
+        <article v-for="s in services" :key="s.title" class="svc service-card" data-reveal-item>
           <span class="svc__icon" v-html="s.icon" />
           <h3 class="svc__title">{{ s.title }}</h3>
           <p class="svc__text">{{ s.text }}</p>
@@ -70,16 +73,22 @@ const services = [
   gap: 18px;
 }
 .svc {
+  position: relative;
   background: #fff;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 26px 24px 24px;
-  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  transition:
+    transform .32s cubic-bezier(.22, 1, .36, 1),
+    box-shadow .32s ease,
+    border-color .32s ease,
+    background .32s ease;
 }
 .svc:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow);
+  transform: translateY(-7px);
+  box-shadow: 0 22px 46px rgba(11, 28, 58, .12);
   border-color: var(--blue-400);
+  background: linear-gradient(180deg, #fff 0%, #f8fbff 100%);
 }
 .svc__icon {
   display: grid; place-items: center;
@@ -88,10 +97,13 @@ const services = [
   background: var(--blue-100);
   color: var(--blue-600);
   margin-bottom: 16px;
-  transition: background .2s ease, color .2s ease;
+  transition:
+    background .32s ease,
+    color .32s ease,
+    transform .32s cubic-bezier(.22, 1, .36, 1);
 }
 .svc__icon :deep(svg) { width: 28px; height: 28px; }
-.svc:hover .svc__icon { background: var(--blue-600); color: #fff; }
+.svc:hover .svc__icon { background: var(--blue-600); color: #fff; transform: translateY(-2px) scale(1.05); }
 .svc__title { font-size: 19px; margin-bottom: 9px; }
 .svc__text { font-size: 15px; color: var(--text); margin-bottom: 16px; }
 .svc__link {

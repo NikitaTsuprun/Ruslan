@@ -59,25 +59,36 @@ useScrollAnimation(sectionRef, { mode: 'scale-in', stagger: 0.1 })
 
       <div class="adv__layout">
         <aside class="expert" data-reveal-item data-scroll-mode="scale-in">
-          <div class="expert__head">
-            <div class="expert__avatar" aria-hidden="true">РГ</div>
-            <div>
-              <p class="expert__name">Руслан Ганеев</p>
-              <p class="expert__role">Специалист по разблокировке счетов и карт</p>
-            </div>
+          <figure class="expert__media">
+            <img
+              src="/ruslan-ganeev.jpg"
+              alt="Руслан Ганеев"
+              loading="lazy"
+              decoding="async"
+            >
+            <figcaption>Лично веду каждое дело</figcaption>
+          </figure>
+
+          <div class="expert__content">
+            <p class="expert__kicker">Экспертное сопровождение</p>
+            <h3 class="expert__name">Руслан Ганеев</h3>
+            <p class="expert__role">Специалист по разблокировке счетов и карт</p>
+            <p class="expert__bio">
+              Помогаю людям и бизнесу вернуть доступ к собственным деньгам, когда
+              банк заблокировал карту или счёт. Знаю банковские процедуры изнутри
+              и выстраиваю общение с банком так, чтобы блокировку сняли быстро.
+            </p>
           </div>
-          <p class="expert__bio">
-            Помогаю людям и бизнесу вернуть доступ к собственным деньгам, когда
-            банк заблокировал карту или счёт. Знаю банковские процедуры изнутри
-            и выстраиваю общение с банком так, чтобы блокировку сняли быстро.
-          </p>
-          <ul class="expert__facts">
-            <li v-for="f in facts" :key="f.strong">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#16a86b" /><path d="M8 12.4l2.6 2.6L16 9.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" /></svg>
-              <span><b>{{ f.strong }}</b>{{ f.sub }}</span>
-            </li>
-          </ul>
-          <a href="#kontakty" class="btn btn--primary btn--block">Получить консультацию</a>
+
+          <div class="expert__aside">
+            <ul class="expert__facts">
+              <li v-for="f in facts" :key="f.strong">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#16a86b" /><path d="M8 12.4l2.6 2.6L16 9.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                <span><b>{{ f.strong }}</b>{{ f.sub }}</span>
+              </li>
+            </ul>
+            <a href="#kontakty" class="btn btn--primary btn--block">Получить консультацию</a>
+          </div>
         </aside>
 
         <ul class="adv__list">
@@ -98,46 +109,172 @@ useScrollAnimation(sectionRef, { mode: 'scale-in', stagger: 0.1 })
 .adv__layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 20px;
+  gap: 18px;
 }
 
 .expert {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 26px 24px;
-  box-shadow: var(--shadow-sm);
-  transition: transform .32s cubic-bezier(.22, 1, .36, 1), box-shadow .32s ease;
+  position: relative;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 282px;
+  gap: 28px;
+  align-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 7% 12%, rgba(4, 104, 214, .13), transparent 34%),
+    radial-gradient(circle at 92% 10%, rgba(0, 166, 230, .09), transparent 28%),
+    linear-gradient(135deg, #ffffff 0%, #f8fbff 56%, #eef6ff 100%);
+  border: 1px solid rgba(203, 218, 238, .92);
+  border-radius: 26px;
+  padding: 24px;
+  box-shadow: 0 22px 54px rgba(11, 28, 58, .10);
+  transition:
+    transform .32s cubic-bezier(.22, 1, .36, 1),
+    box-shadow .32s ease,
+    border-color .32s ease;
 }
-.expert:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
-.expert__head { display: flex; align-items: center; gap: 15px; margin-bottom: 16px; }
-.expert__avatar {
-  width: 76px; height: 76px; flex: none;
-  border-radius: 50%;
-  display: grid; place-items: center;
-  background: linear-gradient(150deg, var(--blue-500), var(--blue-700));
-  color: #fff; font-size: 26px; font-weight: 800; letter-spacing: .02em;
-  box-shadow: 0 10px 22px rgba(4, 104, 214, .34);
-  transition: transform .32s cubic-bezier(.22, 1, .36, 1);
+.expert::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(110deg, rgba(255, 255, 255, .35) 0 12%, transparent 34%),
+    linear-gradient(180deg, transparent, rgba(255, 255, 255, .34));
+  pointer-events: none;
 }
-.expert:hover .expert__avatar { transform: scale(1.04) rotate(-2deg); }
-.expert__name { font-size: 21px; font-weight: 800; color: var(--ink); }
-.expert__role { font-size: 14px; color: var(--blue-600); font-weight: 600; }
-.expert__bio { font-size: 15px; color: var(--text); margin-bottom: 18px; }
-.expert__facts { display: grid; gap: 12px; margin-bottom: 22px; }
-.expert__facts li { display: flex; align-items: center; gap: 11px; }
-.expert__facts svg { width: 22px; height: 22px; flex: none; }
-.expert__facts b { display: block; font-size: 15px; color: var(--ink); }
-.expert__facts span { font-size: 13px; color: var(--muted); }
-
-.adv__list { display: grid; grid-template-columns: 1fr; gap: 14px; }
-.adv__item {
+.expert:hover {
+  transform: translateY(-4px);
+  border-color: rgba(90, 166, 245, .64);
+  box-shadow: 0 28px 68px rgba(11, 28, 58, .13);
+}
+.expert__media {
+  position: relative;
+  z-index: 1;
+  width: 220px;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 28% 0%, rgba(4, 104, 214, .18), transparent 34%),
+    linear-gradient(145deg, #e9f2fd, #ffffff);
+  box-shadow: 0 18px 42px rgba(11, 28, 58, .14);
+  isolation: isolate;
+}
+.expert__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, transparent 52%, rgba(8, 20, 38, .46) 100%),
+    linear-gradient(105deg, rgba(255, 255, 255, .22) 0 10%, transparent 31% 100%);
+  pointer-events: none;
+}
+.expert__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
+  transform: scale(1.02);
+  transition: transform .45s cubic-bezier(.22, 1, .36, 1), filter .45s ease;
+}
+.expert:hover .expert__media img {
+  transform: scale(1.06);
+  filter: saturate(1.04) contrast(1.02);
+}
+.expert__media figcaption {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, .44);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .84);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  backdrop-filter: blur(14px);
+}
+.expert__content,
+.expert__aside {
+  position: relative;
+  z-index: 1;
+}
+.expert__kicker {
+  width: fit-content;
+  margin-bottom: 11px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(4, 104, 214, .09);
+  color: var(--blue-700);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.expert__name {
+  margin-bottom: 7px;
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 900;
+  color: var(--ink);
+  letter-spacing: -.03em;
+}
+.expert__role {
+  max-width: 520px;
+  margin-bottom: 18px;
+  font-size: 16px;
+  color: var(--blue-600);
+  font-weight: 800;
+}
+.expert__bio {
+  max-width: 630px;
+  font-size: 16px;
+  color: var(--text);
+}
+.expert__aside {
+  display: grid;
+  gap: 16px;
+}
+.expert__facts {
+  display: grid;
+  gap: 10px;
+}
+.expert__facts li {
   display: flex;
-  gap: 15px;
+  align-items: center;
+  gap: 11px;
+  padding: 12px;
+  border: 1px solid rgba(228, 235, 244, .88);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .78);
+  box-shadow: 0 8px 18px rgba(11, 28, 58, .05);
+}
+.expert__facts svg { width: 22px; height: 22px; flex: none; }
+.expert__facts b { display: block; font-size: 14.5px; color: var(--ink); }
+.expert__facts span { font-size: 13px; color: var(--muted); line-height: 1.25; }
+
+.adv__list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+.adv__item {
+  min-height: 176px;
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 19px 20px;
+  border-radius: 18px;
+  padding: 22px;
   transition:
     transform .3s cubic-bezier(.22, 1, .36, 1),
     box-shadow .3s ease,
@@ -146,7 +283,7 @@ useScrollAnimation(sectionRef, { mode: 'scale-in', stagger: 0.1 })
 }
 .adv__item:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 18px 38px rgba(11, 28, 58, .10);
   border-color: var(--blue-400);
   background: linear-gradient(180deg, #fff 0%, #f8fbff 100%);
 }
@@ -160,13 +297,43 @@ useScrollAnimation(sectionRef, { mode: 'scale-in', stagger: 0.1 })
 }
 .adv__ic :deep(svg) { width: 25px; height: 25px; }
 .adv__item:hover .adv__ic { transform: translateY(-2px) scale(1.05); background: var(--blue-600); color: #fff; }
-.adv__title { font-size: 17px; margin-bottom: 5px; }
+.adv__title { font-size: 17px; margin-bottom: 7px; }
 .adv__text { font-size: 14.5px; color: var(--text); }
 
 @media (min-width: 760px) {
   .adv__list { grid-template-columns: 1fr 1fr; }
 }
 @media (min-width: 1000px) {
-  .adv__layout { grid-template-columns: 350px 1fr; gap: 26px; align-items: start; }
+  .adv__list { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 1100px) {
+  .expert {
+    grid-template-columns: 184px minmax(0, 1fr);
+    align-items: start;
+  }
+  .expert__media { width: 184px; }
+  .expert__aside {
+    grid-column: 1 / -1;
+  }
+  .expert__facts {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 760px) {
+  .expert {
+    grid-template-columns: 1fr;
+    padding: 18px;
+    border-radius: 22px;
+  }
+  .expert__media {
+    width: min(260px, 100%);
+    justify-self: center;
+  }
+  .expert__facts {
+    grid-template-columns: 1fr;
+  }
+  .expert__name {
+    font-size: 28px;
+  }
 }
 </style>

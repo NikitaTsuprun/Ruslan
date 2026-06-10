@@ -13,11 +13,32 @@ const methods = [
     icon: svg('<path d="M5 4h3l1.7 4.2-2.1 1.6a13 13 0 0 0 6.6 6.6l1.6-2.1L21 16v3a2 2 0 0 1-2.2 2A17.5 17.5 0 0 1 3 5.2 2 2 0 0 1 5 4z"/>'),
   },
   {
-    label: 'Telegram',
-    value: 'Написать в Telegram',
-    href: contacts.telegram,
-    color: '#29a9eb',
-    icon: svg('<path d="M21 4 3 10.7l6.3 2.3M21 4l-3.4 15.3-5.7-4.3M21 4 9.3 13v6l3-3.1"/>'),
+    label: 'ВКонтакте',
+    value: 'Профиль ВК',
+    href: contacts.vk,
+    color: '#0077ff',
+    icon: svg('<rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M7 9.2c.3 3.2 2.3 5.6 5 5.8M12 15v-3.4c1.6 0 3 1.4 3.4 3.4M12 11.6c1.6 0 2.9-1.2 3.2-2.8"/>'),
+  },
+  {
+    label: 'Авито',
+    value: 'Объявление и отзывы',
+    href: contacts.avito,
+    color: '#04b45f',
+    icon: svg('<circle cx="8" cy="8" r="3.1" fill="currentColor" stroke="none"/><circle cx="16.5" cy="8.5" r="2.4" fill="currentColor" opacity=".74" stroke="none"/><circle cx="9.2" cy="16" r="2.5" fill="currentColor" opacity=".9" stroke="none"/><circle cx="16.2" cy="16.2" r="3.4" fill="currentColor" opacity=".46" stroke="none"/>'),
+  },
+  {
+    label: 'TikTok',
+    value: 'Короткие видео и разборы',
+    href: contacts.tiktok,
+    color: '#111827',
+    icon: svg('<path d="M14.2 3.6v10.2a4.2 4.2 0 1 1-4.2-4.2"/><path d="M14.2 6.4c1.2 2.1 2.8 3.2 5 3.3"/><path d="M10 13.5a1.8 1.8 0 1 0 1.8 1.8"/>'),
+  },
+  {
+    label: 'Instagram',
+    value: 'Профиль Instagram',
+    href: contacts.instagram,
+    color: '#d62976',
+    icon: svg('<rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.4"/><circle cx="16.8" cy="7.2" r=".8" fill="currentColor" stroke="none"/>'),
   },
   {
     label: 'MAX',
@@ -26,33 +47,12 @@ const methods = [
     color: '#574ef0',
     icon: svg('<path d="M4 5.5h16A1.5 1.5 0 0 1 21.5 7v8a1.5 1.5 0 0 1-1.5 1.5H9.5L5 20.5v-4H4A1.5 1.5 0 0 1 2.5 15V7A1.5 1.5 0 0 1 4 5.5z"/><circle cx="8.5" cy="11" r="1.05" fill="currentColor" stroke="none"/><circle cx="12" cy="11" r="1.05" fill="currentColor" stroke="none"/><circle cx="15.5" cy="11" r="1.05" fill="currentColor" stroke="none"/>'),
   },
-  {
-    label: 'WhatsApp',
-    value: 'Написать в WhatsApp',
-    href: contacts.whatsapp,
-    color: '#1fb855',
-    icon: svg('<path d="M3.8 20.2 5 16a8.4 8.4 0 1 1 3.3 3l-4.5 1.2z"/><path d="M9 9.3c.5 2.2 3.5 5.2 5.7 5.6"/>'),
-  },
-  {
-    label: 'ВКонтакте',
-    value: 'Профиль ВКонтакте',
-    href: contacts.vk,
-    color: '#0077ff',
-    icon: svg('<rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M7 9.2c.3 3.2 2.3 5.6 5 5.8M12 15v-3.4c1.6 0 3 1.4 3.4 3.4M12 11.6c1.6 0 2.9-1.2 3.2-2.8"/>'),
-  },
-  {
-    label: 'Электронная почта',
-    value: contacts.email,
-    href: `mailto:${contacts.email}`,
-    color: '#e07c45',
-    icon: svg('<rect x="3" y="5" width="18" height="14" rx="2.6"/><path d="M3.7 6.6 12 12.4l8.3-5.8"/>'),
-  },
 ]
 
 const sectionRef = ref<HTMLElement | null>(null)
 useScrollAnimation(sectionRef, { mode: 'stagger-children', stagger: 0.1 })
 
-const ways = ['Телефон', 'Telegram', 'WhatsApp', 'MAX', 'ВКонтакте']
+const ways = ['Телефон', 'ВКонтакте', 'Авито', 'TikTok', 'Instagram', 'MAX']
 
 const form = reactive({
   name: '',

@@ -14,10 +14,9 @@ const trust = [
   'Работаю со всеми банками РФ',
 ]
 
-// ВАЖНО: цифры опыта/количества — ориентировочные, замените на свои реальные.
 const stats = [
-  { value: '7+ лет', countTo: 7, prefix: '', suffix: '+ лет', label: 'помогаю с разблокировкой' },
-  { value: '1500+', countTo: 1500, prefix: '', suffix: '+', label: 'разблокированных карт и счетов' },
+  { value: '3+ лет', countTo: 3, prefix: '', suffix: '+ лет', label: 'помогаю с разблокировкой' },
+  { value: '500+', countTo: 500, prefix: '', suffix: '+', label: 'разблокировок карт и счетов' },
   { value: 'Вся РФ', countTo: null, prefix: '', suffix: '', label: 'работаю дистанционно' },
   { value: 'от 1 дня', countTo: 1, prefix: 'от ', suffix: ' дня', label: 'срок снятия блокировки' },
 ]

@@ -83,7 +83,13 @@ const jsonLd = {
         },
       ],
       provider: { '@id': `${siteUrl}/#person` },
-      sameAs: [contacts.telegram, contacts.vk, contacts.max].filter(Boolean),
+      sameAs: [
+        contacts.vk,
+        contacts.avito,
+        contacts.tiktok,
+        contacts.instagram,
+        contacts.max,
+      ].filter(Boolean),
     },
     {
       '@type': 'Person',

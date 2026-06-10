@@ -2,6 +2,9 @@
 const { contacts } = useAppConfig()
 const year = new Date().getFullYear()
 
+const svg = (inner: string) =>
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`
+
 const navLinks = [
   { href: '#uslugi', label: 'Услуги' },
   { href: '#etapy', label: 'Этапы работы' },
@@ -12,13 +15,47 @@ const navLinks = [
   { href: '#kontakty', label: 'Контакты' },
 ]
 
+const socialLinks = [
+  {
+    label: 'ВК',
+    title: 'ВКонтакте',
+    href: contacts.vk,
+    color: '#0077ff',
+    icon: svg('<rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M7 9.2c.3 3.2 2.3 5.6 5 5.8M12 15v-3.4c1.6 0 3 1.4 3.4 3.4M12 11.6c1.6 0 2.9-1.2 3.2-2.8"/>'),
+  },
+  {
+    label: 'Авито',
+    title: 'Авито',
+    href: contacts.avito,
+    color: '#04b45f',
+    icon: svg('<circle cx="8" cy="8" r="3.1" fill="currentColor" stroke="none"/><circle cx="16.5" cy="8.5" r="2.4" fill="currentColor" opacity=".74" stroke="none"/><circle cx="9.2" cy="16" r="2.5" fill="currentColor" opacity=".9" stroke="none"/><circle cx="16.2" cy="16.2" r="3.4" fill="currentColor" opacity=".46" stroke="none"/>'),
+  },
+  {
+    label: 'TikTok',
+    title: 'TikTok',
+    href: contacts.tiktok,
+    color: '#111827',
+    icon: svg('<path d="M14.2 3.6v10.2a4.2 4.2 0 1 1-4.2-4.2"/><path d="M14.2 6.4c1.2 2.1 2.8 3.2 5 3.3"/><path d="M10 13.5a1.8 1.8 0 1 0 1.8 1.8"/>'),
+  },
+  {
+    label: 'Instagram',
+    title: 'Instagram',
+    href: contacts.instagram,
+    color: '#d62976',
+    icon: svg('<rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.4"/><circle cx="16.8" cy="7.2" r=".8" fill="currentColor" stroke="none"/>'),
+  },
+  {
+    label: 'MAX',
+    title: 'MAX',
+    href: contacts.max,
+    color: '#574ef0',
+    icon: svg('<path d="M4 5.5h16A1.5 1.5 0 0 1 21.5 7v8a1.5 1.5 0 0 1-1.5 1.5H9.5L5 20.5v-4H4A1.5 1.5 0 0 1 2.5 15V7A1.5 1.5 0 0 1 4 5.5z"/><circle cx="8.5" cy="11" r="1.05" fill="currentColor" stroke="none"/><circle cx="12" cy="11" r="1.05" fill="currentColor" stroke="none"/><circle cx="15.5" cy="11" r="1.05" fill="currentColor" stroke="none"/>'),
+  },
+].filter((link) => link.href)
+
 const contactLinks = [
   { label: contacts.phone, href: `tel:${contacts.phoneHref}`, ext: false },
-  { label: 'Telegram', href: contacts.telegram, ext: true },
-  { label: 'MAX', href: contacts.max, ext: true },
-  { label: 'WhatsApp', href: contacts.whatsapp, ext: true },
-  { label: 'ВКонтакте', href: contacts.vk, ext: true },
-  { label: contacts.email, href: `mailto:${contacts.email}`, ext: false },
+  ...socialLinks.map((link) => ({ label: link.title, href: link.href, ext: true })),
 ]
 </script>
 
@@ -65,12 +102,30 @@ const contactLinks = [
       </div>
 
       <div class="ftr__bottom">
-        <p class="ftr__copy">© {{ year }} Руслан Ганеев. Разблокировка карт и счетов по 115-ФЗ и 161-ФЗ.</p>
-        <p class="ftr__legal">
-          Информация на сайте носит справочный характер и не является публичной офертой.
-          Услуги оказываются на основании договора. Отправляя формы на сайте,
-          вы соглашаетесь с обработкой персональных данных.
-        </p>
+        <div>
+          <p class="ftr__copy">© {{ year }} Руслан Ганеев. Разблокировка карт и счетов по 115-ФЗ и 161-ФЗ.</p>
+          <p class="ftr__legal">
+            Информация на сайте носит справочный характер и не является публичной офертой.
+            Услуги оказываются на основании договора. Отправляя формы на сайте,
+            вы соглашаетесь с обработкой персональных данных.
+          </p>
+        </div>
+
+        <div class="ftr__socials" aria-label="Социальные сети">
+          <a
+            v-for="social in socialLinks"
+            :key="social.title"
+            :href="social.href"
+            class="ftr__social"
+            :style="{ '--c': social.color }"
+            target="_blank"
+            rel="noopener"
+            :aria-label="social.title"
+          >
+            <span v-html="social.icon" />
+            <b>{{ social.label }}</b>
+          </a>
+        </div>
       </div>
     </div>
   </footer>
@@ -116,14 +171,57 @@ const contactLinks = [
 
 .ftr__bottom {
   padding-top: 26px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+  align-items: start;
 }
 .ftr__copy { font-size: 14px; color: #97a6bd; font-weight: 600; }
 .ftr__legal { font-size: 12.5px; color: #6f8099; line-height: 1.6; max-width: 760px; }
+.ftr__socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.ftr__social {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 39px;
+  padding: 9px 12px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .045);
+  color: #dce8f8;
+  transition:
+    transform .24s cubic-bezier(.22, 1, .36, 1),
+    border-color .24s ease,
+    background .24s ease,
+    color .24s ease;
+}
+.ftr__social span {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  color: var(--c);
+}
+.ftr__social span :deep(svg) { width: 20px; height: 20px; }
+.ftr__social b {
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+.ftr__social:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--c) 54%, rgba(255, 255, 255, .16));
+  background: color-mix(in srgb, var(--c) 12%, rgba(255, 255, 255, .05));
+  color: #fff;
+}
 
 @media (min-width: 760px) {
   .ftr__top { grid-template-columns: 1.7fr 1fr 1fr; gap: 40px; }
+  .ftr__bottom { grid-template-columns: 1fr auto; }
+  .ftr__socials { justify-content: flex-end; max-width: 420px; }
 }
 </style>

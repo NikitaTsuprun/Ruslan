@@ -4,6 +4,11 @@ import { useIntersectionObserver, useMouseInElement } from '@vueuse/core'
 const { contacts } = useAppConfig()
 const { $lenis } = useNuxtApp()
 
+// Учитываем base URL сайта (например, /Ruslan/ на GitHub Pages),
+// иначе изображения из public/ не загружаются на под-пути.
+const baseURL = useRuntimeConfig().app.baseURL
+const asset = (path: string) => baseURL.replace(/\/$/, '') + path
+
 const titleWords = ['Разблокировка', 'карт', 'и', 'счетов', 'по', '115-ФЗ', 'и', '161-ФЗ']
 const titleText = titleWords.join(' ')
 
@@ -219,11 +224,11 @@ onBeforeUnmount(() => {
             <picture>
               <source
                 type="image/webp"
-                srcset="/ruslan-hero.webp 760w, /ruslan-hero@2x.webp 1120w"
+                :srcset="`${asset('/ruslan-hero.webp')} 760w, ${asset('/ruslan-hero@2x.webp')} 1120w`"
                 sizes="(min-width: 960px) 460px, 88vw"
               >
               <img
-                src="/ruslan-hero.jpg"
+                :src="asset('/ruslan-hero.jpg')"
                 width="760"
                 height="1140"
                 alt="Руслан Ганеев — специалист по разблокировке банковских карт и счетов"

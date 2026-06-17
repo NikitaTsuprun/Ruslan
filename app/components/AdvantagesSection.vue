@@ -1,4 +1,8 @@
 <script setup lang="ts">
+// Учитываем base URL сайта (/Ruslan/ на GitHub Pages) для статики из public/.
+const baseURL = useRuntimeConfig().app.baseURL
+const asset = (path: string) => baseURL.replace(/\/$/, '') + path
+
 const svg = (inner: string) =>
   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`
 
@@ -61,7 +65,7 @@ useScrollAnimation(sectionRef, { mode: 'scale-in', stagger: 0.1 })
         <aside class="expert" data-reveal-item data-scroll-mode="scale-in">
           <figure class="expert__media">
             <img
-              src="/ruslan-ganeev.jpg"
+              :src="asset('/ruslan-ganeev.jpg')"
               alt="Руслан Ганеев"
               loading="lazy"
               decoding="async"

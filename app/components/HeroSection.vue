@@ -22,9 +22,13 @@ const stats = [
 ]
 
 const titleRef = ref<HTMLElement | null>(null)
+const eyebrowRef = ref<HTMLElement | null>(null)
 const leadRef = ref<HTMLElement | null>(null)
 const actionsRef = ref<HTMLElement | null>(null)
+const trustRef = ref<HTMLElement | null>(null)
 const visualRef = ref<HTMLElement | null>(null)
+const photoRef = ref<HTMLElement | null>(null)
+const badgesRef = ref<HTMLElement | null>(null)
 const statsRef = ref<HTMLElement | null>(null)
 const bgShift = ref(0)
 const statValues = ref(stats.map((s) => s.value))
@@ -35,15 +39,17 @@ const { elementX, elementY, elementWidth, elementHeight, isOutside } = useMouseI
 
 const cardStyle = computed<Record<string, string>>(() => {
   if (!import.meta.client || elementWidth.value === 0 || elementHeight.value === 0 || isOutside.value) {
-    return { '--tilt-x': '0deg', '--tilt-y': '0deg' }
+    return { '--tilt-x': '0deg', '--tilt-y': '0deg', '--par-x': '0px', '--par-y': '0px' }
   }
 
-  const rotateY = ((elementX.value / elementWidth.value) - 0.5) * 20
-  const rotateX = ((elementY.value / elementHeight.value) - 0.5) * -20
+  const px = (elementX.value / elementWidth.value) - 0.5
+  const py = (elementY.value / elementHeight.value) - 0.5
 
   return {
-    '--tilt-x': `${rotateX.toFixed(2)}deg`,
-    '--tilt-y': `${rotateY.toFixed(2)}deg`,
+    '--tilt-x': `${(py * -8).toFixed(2)}deg`,
+    '--tilt-y': `${(px * 10).toFixed(2)}deg`,
+    '--par-x': `${(px * 18).toFixed(1)}px`,
+    '--par-y': `${(py * 18).toFixed(1)}px`,
   }
 })
 
@@ -62,15 +68,37 @@ onMounted(async () => {
   const { gsap } = await import('gsap')
 
   const words = titleRef.value?.querySelectorAll('.hero__word') ?? []
+  const chips = trustRef.value?.querySelectorAll('li') ?? []
+  const badges = badgesRef.value?.querySelectorAll('.hero-badge') ?? []
 
   if (prefersReduced) {
-    gsap.set([words, leadRef.value, actionsRef.value, visualRef.value], { autoAlpha: 1, y: 0, scale: 1 })
+    gsap.set([eyebrowRef.value, words, leadRef.value, actionsRef.value, chips, photoRef.value, badges], {
+      autoAlpha: 1,
+      y: 0,
+      x: 0,
+      scale: 1,
+      clipPath: 'inset(0% 0% 0% 0%)',
+    })
   } else {
     gsap
       .timeline({ defaults: { ease: 'power3.out' } })
-      .fromTo(words, { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.78, stagger: 0.08 })
-      .fromTo(visualRef.value, { autoAlpha: 0, y: 34, scale: 0.96 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.9 }, 0.18)
-      .fromTo([leadRef.value, actionsRef.value], { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: 0.62, stagger: 0.1 }, 0.6)
+      .fromTo(eyebrowRef.value, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6 })
+      .fromTo(words, { autoAlpha: 0, y: 44 }, { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.07 }, 0.1)
+      .fromTo(
+        photoRef.value,
+        { autoAlpha: 0, clipPath: 'inset(8% 6% 14% 6% round 30px)', scale: 1.06 },
+        { autoAlpha: 1, clipPath: 'inset(0% 0% 0% 0% round 30px)', scale: 1, duration: 1.05 },
+        0.25,
+      )
+      .fromTo(leadRef.value, { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.5)
+      .fromTo(actionsRef.value, { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.62)
+      .fromTo(chips, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.08 }, 0.7)
+      .fromTo(
+        badges,
+        { autoAlpha: 0, y: 24, scale: 0.82 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.14, ease: 'back.out(1.7)' },
+        0.85,
+      )
   }
 
   const statsControls = useIntersectionObserver(
@@ -133,6 +161,7 @@ onBeforeUnmount(() => {
     <div class="hero__bg" :style="bgStyle" aria-hidden="true">
       <span class="blob blob--1" />
       <span class="blob blob--2" />
+      <span class="hero__grid-lines" />
     </div>
     <ClientOnly>
       <HeroParticles />
@@ -140,7 +169,7 @@ onBeforeUnmount(() => {
 
     <div class="container hero__grid">
       <div class="hero__content">
-        <p class="eyebrow">
+        <p ref="eyebrowRef" class="eyebrow">
           <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V5l8-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /></svg>
           Юридическая помощь · 115-ФЗ и 161-ФЗ
         </p>
@@ -173,127 +202,67 @@ onBeforeUnmount(() => {
           </a>
         </div>
 
+        <ul ref="trustRef" class="hero__trust">
+          <li v-for="item in trust" :key="item">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#16a86b" /><path d="M8 12.4l2.6 2.6L16 9.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            {{ item }}
+          </li>
+        </ul>
       </div>
 
-      <div ref="visualRef" class="hero__visual" aria-hidden="true">
-        <div class="card3d" :style="cardStyle">
-          <div class="hero-phone">
-            <span class="hero-phone__button hero-phone__button--action" />
-            <span class="hero-phone__button hero-phone__button--volume-up" />
-            <span class="hero-phone__button hero-phone__button--volume-down" />
-            <span class="hero-phone__button hero-phone__button--power" />
+      <div ref="visualRef" class="hero__visual">
+        <div class="hero-portrait" :style="cardStyle">
+          <span class="hero-portrait__glow" aria-hidden="true" />
+          <span class="hero-portrait__ring" aria-hidden="true" />
 
-            <div class="hero-phone__shell">
-              <div class="hero-phone__screen">
-                <div class="hero-phone__status">
-                  <span>9:41</span>
-                  <span>5G ▰</span>
-                </div>
+          <figure ref="photoRef" class="hero-portrait__frame">
+            <picture>
+              <source
+                type="image/webp"
+                srcset="/ruslan-hero.webp 760w, /ruslan-hero@2x.webp 1120w"
+                sizes="(min-width: 960px) 460px, 88vw"
+              >
+              <img
+                src="/ruslan-hero.jpg"
+                width="760"
+                height="1140"
+                alt="Руслан Ганеев — специалист по разблокировке банковских карт и счетов"
+                fetchpriority="high"
+                decoding="async"
+              >
+            </picture>
+            <figcaption class="hero-portrait__id">
+              <strong>Руслан Ганеев</strong>
+              <span>юрист · разблокировка по 115-ФЗ и 161-ФЗ</span>
+            </figcaption>
+          </figure>
 
-                <span class="hero-phone__island"><i /></span>
-
-                <div class="bank-app">
-                  <div class="bank-app__hero">
-                    <div class="bank-app__nav">
-                      <span class="bank-app__back">
-                        <svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                      </span>
-                      <span class="bank-app__tag">115-ФЗ</span>
-                    </div>
-
-                    <div class="bank-app__account">
-                      <span>Текущий счет · T-Bank</span>
-                      <strong>27 914,80 ₽</strong>
-                      <small>Доступ ограничен банком</small>
-                    </div>
-
-                    <div class="bank-app__card">
-                      <span>BLACK</span>
-                      <b>•• 4417</b>
-                      <i />
-                    </div>
-                  </div>
-
-                  <div class="bank-app__sheet">
-                    <div class="bank-alert">
-                      <span class="bank-alert__icon">!</span>
-                      <span>
-                        <b>Ограничения по счету</b>
-                        <small>Нужны пояснения по операциям</small>
-                      </span>
-                    </div>
-
-                    <div class="bank-actions">
-                      <span>
-                        <i>₽</i>
-                        Оплатить
-                      </span>
-                      <span>
-                        <i>+</i>
-                        Пополнить
-                      </span>
-                      <span>
-                        <i>↗</i>
-                        Перевести
-                      </span>
-                    </div>
-
-                    <div class="bank-widgets">
-                      <article>
-                        <span>Операции по счету</span>
-                        <b>запрос банка</b>
-                        <div class="bank-bars">
-                          <i /><i /><i /><i />
-                        </div>
-                      </article>
-                      <article>
-                        <span>Документы</span>
-                        <b>3 из 4 готовы</b>
-                        <small>пояснения, чеки, договор</small>
-                      </article>
-                    </div>
-
-                    <div class="unlock-progress">
-                      <div>
-                        <span>Сопровождение</span>
-                        <b>Разблокировка в работе</b>
-                      </div>
-                      <strong>82%</strong>
-                    </div>
-
-                    <div class="bank-bottom">
-                      <span class="is-active">Главная</span>
-                      <span>Платежи</span>
-                      <span>Сервисы</span>
-                      <span>Чат</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="hero-phone__float hero-phone__float--success">
-              <span>
+          <div ref="badgesRef" class="hero-portrait__badges" aria-hidden="true">
+            <div class="hero-badge hero-badge--unlock">
+              <span class="hero-badge__icon">
                 <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.4 4.2L19 7" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
               </span>
-              <b>Пакет готов</b>
+              <span class="hero-badge__text">
+                <b>Карта разблокирована</b>
+                <small>доступ восстановлен</small>
+              </span>
             </div>
 
-            <div class="hero-phone__float hero-phone__float--case">
-              <span>Кейс</span>
-              <b>3 дня</b>
-              <small>до ответа банка</small>
+            <div class="hero-badge hero-badge--case">
+              <span class="hero-badge__num">3 дня</span>
+              <small>средний срок ответа банка</small>
+            </div>
+
+            <div class="hero-badge hero-badge--rating">
+              <span class="hero-badge__stars">
+                <svg v-for="n in 5" :key="n" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 18.9 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9 2.9-6z" /></svg>
+              </span>
+              <b>500+ дел</b>
+              <small>с разблокировкой</small>
             </div>
           </div>
         </div>
       </div>
-
-      <ul class="hero__trust">
-        <li v-for="item in trust" :key="item">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#16a86b" /><path d="M8 12.4l2.6 2.6L16 9.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" /></svg>
-          {{ item }}
-        </li>
-      </ul>
     </div>
 
     <div class="container">
@@ -311,7 +280,9 @@ onBeforeUnmount(() => {
 .hero {
   position: relative;
   padding: 40px 0 56px;
-  background: linear-gradient(180deg, #eef4fc 0%, #f7fafe 52%, #fff 100%);
+  background:
+    radial-gradient(1100px 620px at 78% -8%, #e7f1ff 0%, transparent 60%),
+    linear-gradient(180deg, #eef4fc 0%, #f7fafe 52%, #fff 100%);
   overflow: hidden;
 }
 .hero__bg {
@@ -323,18 +294,31 @@ onBeforeUnmount(() => {
 .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; }
 .blob--1 { width: 420px; height: 420px; background: #cfe1fb; top: -140px; right: -90px; }
 .blob--2 { width: 360px; height: 360px; background: #d9f0fb; bottom: -120px; left: -120px; }
+.hero__grid-lines {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(4, 104, 214, .045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(4, 104, 214, .045) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(900px 560px at 80% 6%, #000 0%, transparent 72%);
+  -webkit-mask-image: radial-gradient(900px 560px at 80% 6%, #000 0%, transparent 72%);
+}
 
-.hero__grid { position: relative; display: grid; gap: 38px; }
+.hero__grid { position: relative; display: grid; gap: 36px; }
 .hero__content { position: relative; z-index: 2; }
 
 .hero__title {
-  font-size: 33px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 32px;
   margin: 6px 0 16px;
-  letter-spacing: -.025em;
+  letter-spacing: -.035em;
+  line-height: 1.12;
 }
 .hero__word {
   display: inline-block;
-  margin-right: .22em;
+  margin-right: .2em;
   opacity: 0;
   transform: translateY(40px);
   will-change: opacity, transform;
@@ -358,6 +342,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  margin-bottom: 26px;
   opacity: 0;
   transform: translateY(22px);
 }
@@ -366,531 +351,179 @@ onBeforeUnmount(() => {
 .hero__trust li {
   display: flex; align-items: center; gap: 10px;
   font-size: 15px; font-weight: 600; color: var(--ink);
+  opacity: 0;
 }
 .hero__trust svg { width: 21px; height: 21px; flex: none; }
 
-/* Телефонное превью первого экрана */
+/* ===== Портрет первого экрана ===== */
 .hero__visual {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
+  perspective: 1100px;
 }
-.card3d {
+.hero-portrait {
   position: relative;
-  width: min(450px, 100%);
-  display: flex;
-  justify-content: center;
-  transform: perspective(800px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
-  transform-style: preserve-3d;
-  transition: transform .18s ease-out;
+  width: min(460px, 100%);
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform .25s ease-out;
   will-change: transform;
 }
-.hero-phone {
-  position: relative;
-  width: min(326px, 78vw);
-  aspect-ratio: 9 / 19.35;
-  transform-style: preserve-3d;
+.hero-portrait__glow {
+  position: absolute;
+  inset: -12% -10% -4%;
+  border-radius: 40px;
+  background:
+    radial-gradient(60% 55% at 70% 28%, rgba(4, 104, 214, .42), transparent 70%),
+    radial-gradient(60% 50% at 30% 80%, rgba(0, 166, 230, .34), transparent 72%);
+  filter: blur(34px);
+  opacity: .9;
+  animation: heroGlow 9s ease-in-out infinite;
 }
-.hero-phone__shell {
+.hero-portrait__ring {
+  position: absolute;
+  inset: -16px;
+  border-radius: 36px;
+  background: linear-gradient(150deg, rgba(255, 255, 255, .9), rgba(4, 104, 214, .18) 40%, transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.5px;
+  opacity: .8;
+}
+.hero-portrait__frame {
   position: relative;
+  z-index: 1;
+  border-radius: 30px;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  background: linear-gradient(180deg, #dfe7f1, #c9d4e2);
+  box-shadow:
+    0 40px 90px rgba(6, 40, 90, .28),
+    0 14px 32px rgba(11, 28, 58, .18),
+    inset 0 0 0 1px rgba(255, 255, 255, .55);
+  will-change: clip-path, transform, opacity;
+}
+.hero-portrait__frame img {
   width: 100%;
   height: 100%;
-  padding: 13px;
-  border-radius: 64px;
-  background:
-    linear-gradient(118deg, rgba(255, 255, 255, .72) 0 2.4%, rgba(255, 255, 255, .18) 6%, transparent 15%),
-    linear-gradient(302deg, rgba(255, 255, 255, .38) 0 4%, rgba(3, 11, 22, .24) 13%, transparent 28%),
-    linear-gradient(145deg, #d8dde5 0%, #596474 9%, #151d29 28%, #050914 58%, #404b59 88%, #f1f4f8 100%);
-  box-shadow:
-    0 42px 96px rgba(6, 40, 90, .30),
-    0 18px 38px rgba(11, 28, 58, .25),
-    0 0 0 10px rgba(255, 255, 255, .32),
-    inset 0 0 0 1px rgba(255, 255, 255, .42),
-    inset 0 0 0 4px rgba(5, 10, 17, .84);
-  transform-style: preserve-3d;
-  animation: phoneFloat 7s ease-in-out infinite;
+  object-fit: cover;
+  object-position: 56% 14%;
+  transform: translate(var(--par-x, 0px), var(--par-y, 0px)) scale(1.06);
+  transition: transform .25s ease-out;
 }
-.hero-phone__shell::before,
-.hero-phone__shell::after {
-  content: '';
-  position: absolute;
-  pointer-events: none;
-}
-.hero-phone__shell::before {
-  inset: 9px;
-  border-radius: 54px;
-  border: 1px solid rgba(255, 255, 255, .18);
-  box-shadow:
-    inset 0 0 0 2px rgba(0, 0, 0, .72),
-    inset 0 0 34px rgba(255, 255, 255, .11);
-  z-index: 1;
-}
-.hero-phone__shell::after {
-  inset: 0;
-  border-radius: inherit;
-  background:
-    linear-gradient(112deg, transparent 0 16%, rgba(255, 255, 255, .22) 23%, transparent 32%),
-    linear-gradient(284deg, transparent 0 66%, rgba(255, 255, 255, .16) 76%, transparent 86%);
-  mix-blend-mode: screen;
-  opacity: .7;
-  z-index: 5;
-}
-.hero-phone__button {
-  position: absolute;
-  display: block;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #727d89, #101722 52%, #566170);
-  box-shadow:
-    inset 1px 0 0 rgba(255, 255, 255, .26),
-    0 4px 10px rgba(11, 28, 58, .22);
-  z-index: 0;
-}
-.hero-phone__button--action {
-  left: -4px;
-  top: 18%;
-  width: 5px;
-  height: 34px;
-}
-.hero-phone__button--volume-up,
-.hero-phone__button--volume-down {
-  left: -6px;
-  width: 7px;
-  height: 70px;
-}
-.hero-phone__button--volume-up { top: 28%; }
-.hero-phone__button--volume-down { top: 39%; }
-.hero-phone__button--power {
-  right: -6px;
-  top: 32%;
-  width: 7px;
-  height: 96px;
-}
-.hero-phone__screen {
-  position: relative;
-  height: 100%;
-  overflow: hidden;
-  border-radius: 51px;
-  border: 1px solid rgba(255, 255, 255, .14);
-  background: #f4f8fd;
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, .60),
-    inset 0 0 42px rgba(255, 255, 255, .08);
-  z-index: 1;
-}
-.hero-phone__screen::after {
+.hero-portrait__frame::after {
   content: '';
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(112deg, rgba(255, 255, 255, .24) 0 8%, transparent 20% 66%, rgba(255, 255, 255, .1) 78%, transparent 92%),
-    radial-gradient(circle at 20% 0%, rgba(255, 255, 255, .2), transparent 24%);
-  mix-blend-mode: screen;
-  opacity: .58;
+    linear-gradient(176deg, transparent 52%, rgba(8, 22, 44, .12) 72%, rgba(8, 22, 44, .68) 100%),
+    linear-gradient(115deg, rgba(4, 104, 214, .14), transparent 42%);
   pointer-events: none;
-  z-index: 5;
 }
-.hero-phone__status {
+.hero-portrait__id {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 6;
-  min-height: 43px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 31px;
-  color: rgba(255, 255, 255, .92);
-  font-size: 13px;
-  font-weight: 800;
-  line-height: 1;
-}
-.hero-phone__island {
-  position: absolute;
-  top: 14px;
-  left: 50%;
-  z-index: 7;
-  width: 124px;
-  height: 35px;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 78% 48%, rgba(38, 53, 68, .96) 0 8%, rgba(0, 0, 0, .98) 9% 100%),
-    rgba(0, 0, 0, .98);
-  transform: translateX(-50%);
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, .04),
-    inset 0 -8px 18px rgba(255, 255, 255, .035),
-    0 2px 8px rgba(0, 0, 0, .48);
-}
-.hero-phone__island i {
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  width: 10px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle at 42% 40%, rgba(71, 104, 132, .9), rgba(3, 7, 14, .98) 68%);
-  transform: translateY(-50%);
-}
-.bank-app {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background: #f4f8fd;
-}
-.bank-app__hero {
-  min-height: 300px;
-  padding: 60px 24px 44px;
+  left: 20px;
+  right: 20px;
+  bottom: 18px;
+  z-index: 2;
   color: #fff;
-  background:
-    radial-gradient(circle at 18% 16%, rgba(4, 104, 214, .56), transparent 32%),
-    radial-gradient(circle at 86% 20%, rgba(0, 166, 230, .26), transparent 34%),
-    linear-gradient(180deg, #0d1826 0%, #172231 100%);
 }
-.bank-app__nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 29px;
-}
-.bank-app__back,
-.bank-app__tag {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.bank-app__back {
-  width: 38px;
-  height: 38px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, .1);
-  color: rgba(255, 255, 255, .9);
-}
-.bank-app__back svg { width: 23px; height: 23px; }
-.bank-app__tag {
-  min-height: 38px;
-  padding: 0 16px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .12);
-  color: rgba(255, 255, 255, .84);
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: .08em;
-}
-.bank-app__account span,
-.bank-app__account small {
+.hero-portrait__id strong {
   display: block;
-  color: rgba(255, 255, 255, .7);
-  font-size: 14px;
+  font-family: var(--font-display);
   font-weight: 700;
+  font-size: 20px;
+  letter-spacing: -.02em;
 }
-.bank-app__account strong {
-  display: block;
-  margin-top: 6px;
-  color: #fff;
-  font-size: 38px;
-  line-height: 1.05;
-  letter-spacing: -.03em;
-}
-.bank-app__account small {
-  margin-top: 12px;
-  color: rgba(255, 255, 255, .58);
-}
-.bank-app__card {
-  position: absolute;
-  right: 26px;
-  top: 196px;
-  width: 116px;
-  min-height: 70px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border-radius: 22px;
-  padding: 16px;
-  color: #fff;
-  background:
-    radial-gradient(circle at 84% 18%, rgba(255, 255, 255, .22), transparent 32%),
-    linear-gradient(135deg, #111824 0%, #02050a 62%, #233144 100%);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, .32);
-}
-.bank-app__card span {
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: .12em;
-}
-.bank-app__card b {
-  font-size: 15px;
-  letter-spacing: .04em;
-}
-.bank-app__card i {
-  position: absolute;
-  right: 17px;
-  bottom: 17px;
-  width: 28px;
-  height: 18px;
-  border-radius: 5px;
-  background: linear-gradient(90deg, #ee4d4d 0 50%, #f3c243 50% 100%);
-}
-.bank-app__sheet {
-  flex: 1;
-  min-height: 0;
-  display: grid;
-  grid-template-rows: auto auto auto auto 1fr;
-  gap: 12px;
-  margin-top: -43px;
-  padding: 26px 24px 21px;
-  border-radius: 43px 43px 50px 50px;
-  background:
-    radial-gradient(circle at 18% 0%, rgba(227, 238, 252, .96), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, .98), #f5f8fc);
-  box-shadow: 0 -12px 30px rgba(8, 20, 38, .12);
-}
-.bank-alert {
-  display: grid;
-  grid-template-columns: 48px 1fr;
-  align-items: center;
-  gap: 15px;
-  padding: 14px 16px;
-  border: 1px solid rgba(228, 235, 244, .96);
-  border-radius: 28px;
-  background: #fff;
-  box-shadow: 0 10px 24px rgba(11, 28, 58, .08);
-}
-.bank-alert__icon {
-  width: 48px;
-  height: 48px;
-  display: grid;
-  place-items: center;
-  border-radius: 20px;
-  background: #fff1df;
-  color: #be6a10;
-  font-size: 24px;
-  font-weight: 900;
-}
-.bank-alert b,
-.bank-widgets b,
-.unlock-progress b {
-  display: block;
-  color: var(--ink);
-  line-height: 1.18;
-}
-.bank-alert b { font-size: 15.5px; }
-.bank-alert small,
-.bank-widgets small,
-.unlock-progress span {
+.hero-portrait__id span {
   display: block;
   margin-top: 2px;
-  color: var(--muted);
-  font-size: 12.5px;
-  line-height: 1.25;
-}
-.bank-actions {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 11px;
-}
-.bank-actions span {
-  display: grid;
-  place-items: center;
-  gap: 9px;
-  min-height: 78px;
-  border-radius: 23px;
-  background: #fff;
-  color: var(--blue-700);
-  font-size: 12.5px;
-  font-weight: 800;
-  box-shadow: 0 8px 20px rgba(11, 28, 58, .07);
-}
-.bank-actions i {
-  width: 29px;
-  height: 29px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--blue-100);
-  color: var(--blue-600);
-  font-style: normal;
-  font-weight: 900;
-  line-height: 1;
-}
-.bank-widgets {
-  display: grid;
-  grid-template-columns: 1.08fr .92fr;
-  gap: 12px;
-}
-.bank-widgets article {
-  min-height: 110px;
-  padding: 16px;
-  border: 1px solid rgba(228, 235, 244, .92);
-  border-radius: 27px;
-  background: #fff;
-  box-shadow: 0 8px 18px rgba(11, 28, 58, .06);
-}
-.bank-widgets span {
-  display: block;
-  color: var(--muted);
-  font-size: 12.5px;
-  font-weight: 800;
-  line-height: 1.2;
-}
-.bank-widgets b {
-  margin-top: 8px;
-  font-size: 14px;
-}
-.bank-bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 4px;
-  height: 26px;
-  margin-top: 18px;
-}
-.bank-bars i {
-  flex: 1;
-  border-radius: 999px;
-  background: var(--blue-500);
-  animation: bankBar 2.6s ease-in-out infinite;
-}
-.bank-bars i:nth-child(1) { height: 38%; background: var(--cyan); }
-.bank-bars i:nth-child(2) { height: 72%; animation-delay: .16s; }
-.bank-bars i:nth-child(3) { height: 52%; background: var(--green); animation-delay: .32s; }
-.bank-bars i:nth-child(4) { height: 86%; background: var(--amber); animation-delay: .48s; }
-.unlock-progress {
-  min-height: 90px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 19px 21px;
-  border-radius: 27px;
-  background:
-    linear-gradient(#fff, #fff) padding-box,
-    linear-gradient(100deg, rgba(4, 104, 214, .5), rgba(22, 168, 107, .42)) border-box;
-  border: 1px solid transparent;
-  box-shadow: 0 10px 24px rgba(4, 104, 214, .08);
-}
-.unlock-progress b { margin-top: 5px; font-size: 14px; }
-.unlock-progress strong {
-  width: 52px;
-  height: 52px;
-  display: grid;
-  place-items: center;
-  flex: none;
-  border-radius: 50%;
-  color: var(--blue-700);
   font-size: 13px;
-  background:
-    radial-gradient(circle at center, #fff 0 55%, transparent 56%),
-    conic-gradient(var(--blue-600) 0 82%, var(--blue-100) 82% 100%);
+  font-weight: 600;
+  color: rgba(255, 255, 255, .82);
 }
-.bank-bottom {
-  align-self: end;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
-  padding-top: 15px;
-  color: var(--muted);
-  font-size: 11.5px;
-  font-weight: 800;
-  text-align: center;
-}
-.bank-bottom span::before {
-  content: '';
-  display: block;
-  width: 27px;
-  height: 5px;
-  margin: 0 auto 8px;
-  border-radius: 999px;
-  background: #d9e4f2;
-}
-.bank-bottom .is-active {
-  color: var(--blue-700);
-}
-.bank-bottom .is-active::before {
-  background: var(--blue-600);
-}
-.hero-phone__float {
+
+.hero-portrait__badges { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.hero-badge {
   position: absolute;
-  z-index: 8;
+  border: 1px solid rgba(228, 235, 244, .9);
+  background: #fff;
+  box-shadow:
+    0 26px 54px rgba(11, 28, 58, .22),
+    0 6px 16px rgba(11, 28, 58, .12),
+    inset 0 0 0 1px rgba(255, 255, 255, .6);
+  opacity: 0;
+}
+.hero-badge--unlock {
+  top: 56%;
+  left: -52px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  border: 1px solid rgba(228, 235, 244, .9);
-  background: rgba(255, 255, 255, .94);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 18px 44px rgba(11, 28, 58, .14);
+  gap: 12px;
+  padding: 13px 17px 13px 13px;
+  border-radius: 20px;
+  animation: heroFloat 5.6s ease-in-out 1.9s infinite;
 }
-.hero-phone__float--success {
-  top: 23%;
-  left: -76px;
-  padding: 17px 22px;
-  border-radius: 27px;
-  animation: phoneFloatBadge 5.4s ease-in-out infinite;
-}
-.hero-phone__float--success span {
-  width: 52px;
-  height: 52px;
+.hero-badge__icon {
+  width: 44px;
+  height: 44px;
+  flex: none;
   display: grid;
   place-items: center;
-  flex: none;
-  border-radius: 19px;
+  border-radius: 14px;
   background: #e3f6ed;
   color: var(--green);
 }
-.hero-phone__float--success svg {
-  width: 28px;
-  height: 28px;
+.hero-badge__icon svg { width: 24px; height: 24px; }
+.hero-badge__text b { display: block; color: var(--ink); font-size: 14.5px; white-space: nowrap; }
+.hero-badge__text small { display: block; color: var(--muted); font-size: 12px; margin-top: 1px; }
+
+.hero-badge--case {
+  right: -32px;
+  top: 30%;
+  width: 150px;
+  padding: 16px 18px;
+  border-radius: 20px;
+  animation: heroFloat 6.2s ease-in-out 2.1s infinite;
 }
-.hero-phone__float--success b {
-  color: var(--ink);
-  font-size: 17px;
-  white-space: nowrap;
-}
-.hero-phone__float--case {
-  right: -77px;
-  bottom: 22%;
-  width: 172px;
+.hero-badge__num {
   display: block;
-  border-radius: 25px;
-  padding: 24px 25px;
-  animation: phoneFloatBadge 5.8s ease-in-out infinite .45s;
-}
-.hero-phone__float--case span {
-  display: block;
-  margin-bottom: 11px;
-  color: var(--blue-600);
-  font-size: 15px;
-  font-weight: 900;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-.hero-phone__float--case b {
-  display: block;
-  color: var(--blue-700);
-  font-size: 40px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 28px;
   line-height: 1;
   letter-spacing: -.03em;
+  white-space: nowrap;
+  color: var(--blue-700);
 }
-.hero-phone__float--case small {
-  display: block;
-  margin-top: 7px;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.2;
+.hero-badge--case small { display: block; margin-top: 7px; color: var(--muted); font-size: 12.5px; line-height: 1.25; }
+
+.hero-badge--rating {
+  top: -24px;
+  left: -34px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  text-align: left;
+  animation: heroFloat 5.2s ease-in-out 2.3s infinite;
 }
-@keyframes phoneFloat {
+.hero-badge__stars { display: flex; gap: 2px; color: var(--amber); margin-bottom: 4px; }
+.hero-badge__stars svg { width: 13px; height: 13px; }
+.hero-badge--rating b { display: block; color: var(--ink); font-size: 15px; font-weight: 800; }
+.hero-badge--rating small { display: block; color: var(--muted); font-size: 11.5px; }
+
+@keyframes heroGlow {
+  0%, 100% { transform: scale(1); opacity: .82; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+@keyframes heroFloat {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-9px); }
 }
-@keyframes phoneFloatBadge {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-@keyframes bankBar {
-  0%, 100% { transform: scaleY(.82); }
-  50% { transform: scaleY(1); }
-}
 
-/* Статистика */
+/* ===== Статистика ===== */
 .hero__stats {
   position: relative;
   display: grid;
@@ -900,7 +533,7 @@ onBeforeUnmount(() => {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
-  margin-top: 34px;
+  margin-top: 40px;
 }
 .hero__stats li {
   background: #fff;
@@ -909,60 +542,45 @@ onBeforeUnmount(() => {
 }
 .hero__stat-value {
   display: block;
-  font-size: 24px; font-weight: 800; color: var(--blue-700);
-  letter-spacing: -.02em;
+  font-family: var(--font-display);
+  font-size: 23px; font-weight: 700; color: var(--blue-700);
+  letter-spacing: -.03em;
 }
-.hero__stat-label { display: block; font-size: 13.5px; color: var(--muted); margin-top: 3px; }
+.hero__stat-label { display: block; font-size: 13.5px; color: var(--muted); margin-top: 5px; }
 
 @media (min-width: 600px) {
-  .hero__title { font-size: 42px; }
+  .hero__title { font-size: 41px; }
 }
-@media (max-width: 520px) {
-  .hero-phone {
-    width: min(286px, 84vw);
-  }
-  .hero-phone__float {
-    display: none;
-  }
-  .bank-app__hero {
-    min-height: 210px;
-  }
-  .bank-app__sheet {
-    gap: 8px;
-  }
-  .bank-alert {
-    grid-template-columns: 32px 1fr;
-    padding: 10px;
-  }
-  .bank-alert__icon {
-    width: 32px;
-    height: 32px;
-  }
+@media (max-width: 560px) {
+  .hero-portrait { width: min(330px, 86vw); }
+  .hero-badge--unlock { left: -14px; padding: 10px 14px 10px 10px; }
+  .hero-badge--unlock .hero-badge__icon { width: 36px; height: 36px; }
+  .hero-badge--unlock .hero-badge__text small { display: none; }
+  .hero-badge--case { right: -14px; width: 132px; padding: 13px 14px; }
+  .hero-badge--case .hero-badge__num { font-size: 25px; }
+  .hero-badge--rating { left: -14px; top: -18px; }
 }
 @media (min-width: 960px) {
-  .hero { padding: 54px 0 68px; }
-  .hero__grid { grid-template-columns: 1.05fr .95fr; align-items: start; gap: 56px; }
-  .hero__content { padding-top: 58px; }
-  .hero__visual { align-items: flex-start; }
-  .hero__title { font-size: 52px; }
+  .hero { padding: 56px 0 72px; }
+  .hero__grid { grid-template-columns: 1.04fr .96fr; align-items: center; gap: 56px; }
+  .hero__content { padding-top: 8px; }
+  .hero__title { font-size: 50px; }
   .hero__lead { font-size: 18.5px; }
   .hero__trust { grid-template-columns: 1fr 1fr; }
-  .card3d { width: min(450px, 100%); }
-  .hero__stats { grid-template-columns: repeat(4, 1fr); margin-top: 8px; }
-  .hero__stat-value { font-size: 30px; }
+  .hero__stats { grid-template-columns: repeat(4, 1fr); margin-top: 24px; }
+  .hero__stat-value { font-size: 29px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero__word,
   .hero__lead,
-  .hero__actions {
-    opacity: 1;
-    transform: none;
-  }
-  .hero-phone__shell,
-  .hero-phone__float,
-  .bank-bars i {
-    animation: none;
-  }
+  .hero__actions,
+  .hero__trust li,
+  .hero-badge { opacity: 1; transform: none; }
+  .hero-portrait__glow,
+  .hero-badge--unlock,
+  .hero-badge--case,
+  .hero-badge--rating { animation: none; }
+  .hero-portrait__frame img { transform: scale(1.06); }
 }
 </style>

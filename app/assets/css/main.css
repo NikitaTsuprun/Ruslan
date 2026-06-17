@@ -23,7 +23,8 @@
   --shadow:    0 16px 40px rgba(11, 28, 58, .10);
   --shadow-lg: 0 30px 60px rgba(6, 40, 90, .16);
   --maxw: 1280px;
-  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Unbounded', 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 /* ===== Сброс ===== */
@@ -68,7 +69,7 @@ section[id] { scroll-margin-top: 84px; }
   padding: 7px 14px; border-radius: 100px; margin-bottom: 16px;
 }
 .eyebrow svg { width: 15px; height: 15px; }
-.section-title { font-size: 27px; margin-bottom: 14px; }
+.section-title { font-family: var(--font-display); font-weight: 700; font-size: 27px; margin-bottom: 14px; letter-spacing: -.03em; }
 .section-subtitle { font-size: 17px; color: var(--muted); }
 @media (min-width: 900px) { .section-title { font-size: 38px; } }
 

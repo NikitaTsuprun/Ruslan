@@ -30,6 +30,11 @@ export default defineNuxtPlugin(() => {
   })
   gsap.ticker.lagSmoothing(0)
 
+  // Удобный доступ для отладки в dev (в проде не выполняется).
+  if (import.meta.dev) {
+    ;(window as unknown as { __lenis?: unknown }).__lenis = lenis
+  }
+
   return {
     provide: {
       lenis,

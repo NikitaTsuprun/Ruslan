@@ -59,10 +59,11 @@ export default defineNuxtConfig({
 
   routeRules: {
     '/': { prerender: true },
+    '/keysy': { prerender: true },
   },
 
   sitemap: {
-    urls: ['/'],
+    urls: ['/', '/keysy'],
   },
 
   robots: {

@@ -2,10 +2,15 @@
 import { useWindowScroll } from '@vueuse/core'
 
 const { contacts } = useAppConfig()
+const route = useRoute()
 
 const open = ref(false)
 const { y } = useWindowScroll()
 const scrolled = computed(() => y.value > 80)
+
+// На под-страницах (например, /keysy) якорные ссылки ведут на главную + якорь.
+const anchor = (hash: string) => (route.path === '/' ? hash : `/${hash}`)
+const homeHref = computed(() => (route.path === '/' ? '#top' : '/'))
 
 const links = [
   { href: '#uslugi', label: 'Услуги' },
@@ -32,14 +37,9 @@ onBeforeUnmount(() => {
 <template>
   <header class="hdr" :class="{ 'hdr--scrolled': scrolled }">
     <div class="container hdr__inner">
-      <a href="#top" class="brand" aria-label="Руслан Ганеев — на главную" @click="close">
+      <a :href="homeHref" class="brand" aria-label="Руслан Ганеев — на главную" @click="close">
         <span class="brand__mark" aria-hidden="true">
-          <svg viewBox="0 0 32 32" fill="none">
-            <rect x="3" y="8" width="26" height="17" rx="3.4" fill="#fff" opacity=".95" />
-            <rect x="3" y="11.4" width="26" height="3.4" fill="#0468d6" />
-            <path d="M16 16.2l4.6 1.9v3c0 2.9-1.9 5.2-4.6 6-2.7-.8-4.6-3.1-4.6-6v-3L16 16.2z" fill="#16a86b" />
-            <path d="M14.2 19.7l1.3 1.3 2.5-2.6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
+          <BrandLogo :size="42" />
         </span>
         <span class="brand__text">
           <span class="brand__name">Руслан Ганеев</span>
@@ -48,7 +48,7 @@ onBeforeUnmount(() => {
       </a>
 
       <nav class="hdr__nav" aria-label="Основное меню">
-        <a v-for="l in links" :key="l.href" :href="l.href" class="hdr__link">{{ l.label }}</a>
+        <a v-for="l in links" :key="l.href" :href="anchor(l.href)" class="hdr__link">{{ l.label }}</a>
       </nav>
 
       <div class="hdr__actions">
@@ -58,7 +58,7 @@ onBeforeUnmount(() => {
           </svg>
           <span>{{ contacts.phone }}</span>
         </a>
-        <a href="#kontakty" class="btn btn--primary hdr__cta">Оставить заявку</a>
+        <a :href="anchor('#kontakty')" class="btn btn--primary hdr__cta">Оставить заявку</a>
       </div>
 
       <button
@@ -74,9 +74,9 @@ onBeforeUnmount(() => {
 
     <Transition name="mnav">
       <nav v-if="open" class="mnav" aria-label="Мобильное меню">
-        <a v-for="l in links" :key="l.href" :href="l.href" class="mnav__link" @click="close">{{ l.label }}</a>
+        <a v-for="l in links" :key="l.href" :href="anchor(l.href)" class="mnav__link" @click="close">{{ l.label }}</a>
         <a :href="`tel:${contacts.phoneHref}`" class="mnav__phone" @click="close">{{ contacts.phone }}</a>
-        <a href="#kontakty" class="btn btn--primary btn--block btn--lg" @click="close">Оставить заявку</a>
+        <a :href="anchor('#kontakty')" class="btn btn--primary btn--block btn--lg" @click="close">Оставить заявку</a>
       </nav>
     </Transition>
   </header>
@@ -110,12 +110,12 @@ onBeforeUnmount(() => {
 .brand__mark {
   width: 42px; height: 42px;
   display: grid; place-items: center;
-  background: linear-gradient(150deg, var(--blue-500), var(--blue-700));
-  border-radius: 11px;
+  border-radius: 12px;
+  overflow: hidden;
   box-shadow: 0 6px 16px rgba(4, 104, 214, .32);
   transition: transform .28s cubic-bezier(.22, 1, .36, 1), box-shadow .28s ease;
 }
-.brand__mark svg { width: 26px; height: 26px; }
+.brand__mark svg { width: 100%; height: 100%; }
 .brand:hover .brand__mark { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(4, 104, 214, .36); }
 .brand__text { display: flex; flex-direction: column; line-height: 1.15; }
 .brand__name { font-weight: 800; font-size: 16px; color: var(--ink); letter-spacing: -.01em; }

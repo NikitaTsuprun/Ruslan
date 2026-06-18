@@ -87,8 +87,11 @@ async function submit() {
 
   loading.value = true
   try {
-    const res = await $fetch<{ success?: string | boolean; message?: string }>(FORM_ENDPOINT, {
+    // FormSubmit отдаёт JSON, но с заголовком text/html — поэтому форсим JSON-разбор
+    // и на всякий случай парсим строку вручную.
+    const raw = await $fetch<unknown>(FORM_ENDPOINT, {
       method: 'POST',
+      responseType: 'json',
       headers: { Accept: 'application/json' },
       body: {
         'Имя': form.name,
@@ -101,11 +104,19 @@ async function submit() {
         _captcha: 'false',
       },
     })
-    if (res && (res.success === true || res.success === 'true')) {
+
+    let res: { success?: string | boolean; message?: string } = {}
+    if (typeof raw === 'string') {
+      try { res = JSON.parse(raw) } catch { res = {} }
+    } else if (raw && typeof raw === 'object') {
+      res = raw as { success?: string | boolean; message?: string }
+    }
+
+    if (res.success === true || res.success === 'true') {
       sent.value = true
     } else {
       serverError.value =
-        res?.message ||
+        res.message ||
         'Не удалось отправить заявку. Попробуйте ещё раз или свяжитесь по телефону.'
     }
   } catch {

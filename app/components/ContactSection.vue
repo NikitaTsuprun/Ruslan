@@ -46,6 +46,15 @@ const loading = ref(false)
 const sent = ref(false)
 const serverError = ref('')
 
+// Фиксируем высоту формы, чтобы карточка «Заявка отправлена» была той же высоты.
+const formEl = ref<HTMLFormElement | null>(null)
+const lockedHeight = ref(0)
+const successStyle = computed(() => (lockedHeight.value ? { minHeight: `${lockedHeight.value}px` } : {}))
+function markSent() {
+  lockedHeight.value = formEl.value?.offsetHeight || 0
+  sent.value = true
+}
+
 // Маска телефона: +7 (XXX) XXX-XX-XX, автодополнение кода страны.
 function formatPhone(raw: string): string {
   let d = raw.replace(/\D/g, '')
@@ -81,7 +90,7 @@ async function submit() {
 
   // Honeypot: скрытое поле заполняют только боты — тихо «успех», ничего не шлём.
   if (form.company.trim()) {
-    sent.value = true
+    markSent()
     return
   }
 
@@ -113,7 +122,7 @@ async function submit() {
     }
 
     if (res.success === true || res.success === 'true') {
-      sent.value = true
+      markSent()
     } else {
       serverError.value =
         res.message ||
@@ -139,6 +148,7 @@ function resetForm() {
   })
   errors.name = errors.phone = errors.consent = ''
   serverError.value = ''
+  lockedHeight.value = 0
   sent.value = false
 }
 </script>
@@ -195,7 +205,8 @@ function resetForm() {
         </div>
 
         <div class="form-card" data-reveal-item data-scroll-mode="fade-right">
-          <form v-if="!sent" class="form" novalidate @submit.prevent="submit">
+          <Transition name="swap" mode="out-in">
+          <form v-if="!sent" key="form" ref="formEl" class="form" novalidate @submit.prevent="submit">
             <h3 class="form__title">Оставить заявку на разблокировку</h3>
             <p class="form__sub">Заполните форму — свяжусь с вами в ближайшее время.</p>
 
@@ -284,7 +295,7 @@ function resetForm() {
             </p>
           </form>
 
-          <div v-else class="form-success">
+          <div v-else key="success" class="form-success" :style="successStyle">
             <span class="form-success__ic" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
             </span>
@@ -297,6 +308,7 @@ function resetForm() {
               Отправить ещё одну заявку
             </button>
           </div>
+          </Transition>
         </div>
       </div>
     </div>
@@ -455,7 +467,14 @@ function resetForm() {
 .form__status--err { background: #fdecec; color: #c0353a; }
 .form__note { margin-top: 13px; font-size: 12px; color: var(--muted); }
 
-.form-success { text-align: center; padding: 22px 6px; }
+.form-success {
+  text-align: center;
+  padding: 22px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 .form-success__ic {
   width: 72px; height: 72px;
   margin: 0 auto 18px;
@@ -463,10 +482,42 @@ function resetForm() {
   border-radius: 50%;
   background: #e3f6ed;
   color: var(--green);
+  animation: successPop .6s cubic-bezier(.34, 1.56, .64, 1) both;
 }
-.form-success__ic svg { width: 36px; height: 36px; }
-.form-success h3 { font-size: 22px; margin-bottom: 10px; }
-.form-success p { font-size: 15px; color: var(--text); margin-bottom: 20px; }
+.form-success__ic svg {
+  width: 36px; height: 36px;
+  animation: successDraw .45s ease both .28s;
+}
+.form-success h3 {
+  font-size: 22px; margin-bottom: 10px;
+  animation: successRise .5s cubic-bezier(.22, 1, .36, 1) both .34s;
+}
+.form-success p {
+  font-size: 15px; color: var(--text); margin-bottom: 20px;
+  animation: successRise .5s cubic-bezier(.22, 1, .36, 1) both .46s;
+}
+.form-success .btn {
+  animation: successRise .5s cubic-bezier(.22, 1, .36, 1) both .58s;
+}
+
+@keyframes successPop {
+  0% { opacity: 0; transform: scale(.4); }
+  60% { transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes successDraw {
+  from { opacity: 0; transform: scale(.6); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes successRise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Смена формы на экран успеха: форма плавно уходит, затем появляется успех */
+.swap-leave-active { transition: opacity .32s ease, transform .32s cubic-bezier(.22, 1, .36, 1); }
+.swap-leave-to { opacity: 0; transform: scale(.97) translateY(-6px); }
+.swap-enter-active { transition: opacity .01s; }
 
 @keyframes contactGlow {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: .75; }

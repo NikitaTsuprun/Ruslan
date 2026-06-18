@@ -72,23 +72,36 @@ function validate() {
   return !errors.name && !errors.phone && !errors.consent
 }
 
+// Заявки уходят на почту через FormSubmit.co (без сервера — работает на GitHub Pages).
+const FORM_ENDPOINT = 'https://formsubmit.co/ajax/maximbas2001@gmail.com'
+
 async function submit() {
   serverError.value = ''
   if (!validate()) return
+
+  // Honeypot: скрытое поле заполняют только боты — тихо «успех», ничего не шлём.
+  if (form.company.trim()) {
+    sent.value = true
+    return
+  }
+
   loading.value = true
   try {
-    const res = await $fetch<{ ok: boolean; message?: string }>('/api/contact', {
+    const res = await $fetch<{ success?: string | boolean; message?: string }>(FORM_ENDPOINT, {
       method: 'POST',
+      headers: { Accept: 'application/json' },
       body: {
-        name: form.name,
-        phone: form.phone,
-        way: form.way,
-        bank: form.bank,
-        message: form.message,
-        company: form.company,
+        'Имя': form.name,
+        'Телефон': form.phone,
+        'Способ связи': form.way || 'не указан',
+        'Банк': form.bank || 'не указан',
+        'Сообщение': form.message || 'не указано',
+        _subject: `Заявка на разблокировку — ${form.name}, ${form.phone}`,
+        _template: 'table',
+        _captcha: 'false',
       },
     })
-    if (res?.ok) {
+    if (res && (res.success === true || res.success === 'true')) {
       sent.value = true
     } else {
       serverError.value =

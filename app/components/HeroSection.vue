@@ -566,7 +566,13 @@ onBeforeUnmount(() => {
   .hero-badge--rating { left: -14px; top: -18px; }
 }
 @media (min-width: 960px) {
-  .hero { padding: 56px 0 72px; }
+  .hero {
+    min-height: calc(100dvh - 70px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 34px 0 44px;
+  }
   .hero__grid { grid-template-columns: 1.04fr .96fr; align-items: center; gap: 56px; }
   .hero__content { padding-top: 8px; }
   .hero__title { font-size: 50px; }

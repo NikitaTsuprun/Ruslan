@@ -46,6 +46,24 @@ const loading = ref(false)
 const sent = ref(false)
 const serverError = ref('')
 
+// Маска телефона: +7 (XXX) XXX-XX-XX, автодополнение кода страны.
+function formatPhone(raw: string): string {
+  let d = raw.replace(/\D/g, '')
+  if (!d) return ''
+  if (d[0] === '8') d = '7' + d.slice(1)
+  else if (d[0] !== '7') d = '7' + d
+  d = d.slice(0, 11)
+  let out = '+7'
+  if (d.length > 1) out += ' (' + d.slice(1, 4)
+  if (d.length >= 4) out += ') ' + d.slice(4, 7)
+  if (d.length >= 7) out += '-' + d.slice(7, 9)
+  if (d.length >= 9) out += '-' + d.slice(9, 11)
+  return out
+}
+function onPhoneInput(e: Event) {
+  form.phone = formatPhone((e.target as HTMLInputElement).value)
+}
+
 function validate() {
   errors.name = form.name.trim().length >= 2 ? '' : 'Укажите, как к вам обращаться'
   errors.phone =
@@ -180,12 +198,14 @@ function resetForm() {
               <label for="f-phone">Телефон <span>*</span></label>
               <input
                 id="f-phone"
-                v-model="form.phone"
+                :value="form.phone"
                 type="tel"
                 inputmode="tel"
                 autocomplete="tel"
+                maxlength="18"
                 placeholder="+7 (___) ___-__-__"
                 :class="{ 'is-error': errors.phone }"
+                @input="onPhoneInput"
               />
               <span v-if="errors.phone" class="field__err">{{ errors.phone }}</span>
             </div>

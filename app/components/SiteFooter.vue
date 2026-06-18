@@ -3,10 +3,18 @@ const { contacts } = useAppConfig()
 const year = new Date().getFullYear()
 const socialLinks = useSocials()
 
+// В подвале «Telegram-канал» показываем первым.
+const footerSocials = computed(() => {
+  const channel = socialLinks.filter((s) => s.key === 'telegramChannel')
+  const rest = socialLinks.filter((s) => s.key !== 'telegramChannel')
+  return [...channel, ...rest]
+})
+
 const navLinks = [
   { href: '#uslugi', label: 'Услуги' },
   { href: '#etapy', label: 'Этапы работы' },
   { href: '#preimuschestva', label: 'Почему я' },
+  { href: '#stoimost', label: 'Стоимость и гарантии' },
   { href: '#keysy', label: 'Кейсы и результаты' },
   { href: '#otzyvy', label: 'Отзывы' },
   { href: '#voprosy', label: 'Вопросы и ответы' },
@@ -68,10 +76,11 @@ const contactLinks = [
 
         <div class="ftr__socials" aria-label="Социальные сети">
           <a
-            v-for="social in socialLinks"
+            v-for="social in footerSocials"
             :key="social.title"
             :href="social.href"
             class="ftr__social"
+            :class="{ 'ftr__social--labeled': social.key === 'telegramChannel' }"
             :style="{ '--c': social.color }"
             target="_blank"
             rel="noopener"
@@ -79,6 +88,7 @@ const contactLinks = [
             :title="social.title"
           >
             <span class="ftr__social-ic" v-html="social.icon" />
+            <b v-if="social.key === 'telegramChannel'" class="ftr__social-label">канал</b>
           </a>
         </div>
       </div>
@@ -162,6 +172,14 @@ const contactLinks = [
   place-items: center;
 }
 .ftr__social-ic :deep(svg) { width: 22px; height: 22px; }
+.ftr__social--labeled {
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 17px 0 12px;
+}
+.ftr__social-label { font-size: 13.5px; font-weight: 700; white-space: nowrap; }
 .ftr__social:hover {
   transform: translateY(-4px);
   background: var(--c);

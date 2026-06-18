@@ -16,6 +16,7 @@ const links = [
   { href: '#uslugi', label: 'Услуги' },
   { href: '#etapy', label: 'Этапы' },
   { href: '#preimuschestva', label: 'Почему я' },
+  { href: '#stoimost', label: 'Стоимость' },
   { href: '#keysy', label: 'Кейсы' },
   { href: '#otzyvy', label: 'Отзывы' },
   { href: '#voprosy', label: 'Вопросы' },
@@ -102,7 +103,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
+  gap: 14px;
   height: 70px;
 }
 
@@ -121,9 +122,9 @@ onBeforeUnmount(() => {
 .brand__name { font-weight: 800; font-size: 16px; color: var(--ink); letter-spacing: -.01em; }
 .brand__sub { font-size: 11.5px; color: var(--muted); }
 
-.hdr__nav { display: none; gap: 21px; }
+.hdr__nav { display: none; gap: 16px; }
 .hdr__link {
-  font-size: 15px; font-weight: 600; color: var(--text);
+  font-size: 14.5px; font-weight: 600; color: var(--text);
   position: relative; padding: 6px 0; transition: color .15s ease;
 }
 .hdr__link::after {
@@ -134,7 +135,7 @@ onBeforeUnmount(() => {
 .hdr__link:hover { color: var(--blue-700); }
 .hdr__link:hover::after { transform: scaleX(1); }
 
-.hdr__actions { display: none; align-items: center; gap: 14px; flex: none; }
+.hdr__actions { display: none; align-items: center; gap: 12px; flex: none; }
 .hdr__phone {
   display: flex; align-items: center; gap: 7px;
   font-weight: 700; font-size: 15px; color: var(--ink);
@@ -142,7 +143,7 @@ onBeforeUnmount(() => {
 }
 .hdr__phone svg { width: 17px; height: 17px; color: var(--blue-600); }
 .hdr__phone:hover { color: var(--blue-700); }
-.hdr__cta { padding: 12px 20px; font-size: 15px; }
+.hdr__cta { padding: 11px 17px; font-size: 14.5px; }
 
 .burger {
   width: 44px; height: 44px; flex: none;
@@ -188,7 +189,7 @@ onBeforeUnmount(() => {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@media (min-width: 960px) {
+@media (min-width: 1160px) {
   .hdr__nav, .hdr__actions { display: flex; }
   .burger { display: none; }
 }

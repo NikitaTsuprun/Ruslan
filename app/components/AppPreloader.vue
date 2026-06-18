@@ -49,12 +49,7 @@ onBeforeUnmount(() => {
   <div v-if="visible" ref="preloader" class="app-preloader" aria-label="Загрузка сайта">
     <div class="app-preloader__orb" aria-hidden="true" />
     <div class="app-preloader__mark" aria-hidden="true">
-      <svg viewBox="0 0 72 72" fill="none">
-        <rect x="10" y="20" width="52" height="34" rx="9" fill="#fff" />
-        <rect x="10" y="27" width="52" height="7" fill="#0468d6" />
-        <path d="M36 34.5 47.6 39.4v7.7c0 7.4-4.9 13.4-11.6 15.5-6.7-2.1-11.6-8.1-11.6-15.5v-7.7L36 34.5Z" fill="#16a86b" />
-        <path d="m31.3 46.7 3.4 3.4 6.9-7.3" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
+      <BrandLogo :size="104" />
     </div>
 
     <div class="app-preloader__text">
@@ -100,12 +95,12 @@ onBeforeUnmount(() => {
   display: grid;
   place-items: center;
   border-radius: 28px;
-  background: linear-gradient(150deg, var(--blue-500), var(--blue-700));
+  overflow: hidden;
   box-shadow: 0 22px 54px rgba(4, 104, 214, .34);
 }
 .app-preloader__mark svg {
-  width: 74px;
-  height: 74px;
+  width: 100%;
+  height: 100%;
 }
 .app-preloader__text {
   position: relative;

@@ -200,6 +200,7 @@ useHead({
   <ProblemSection />
   <ProcessSection />
   <AdvantagesSection />
+  <PricingSection />
   <CasesSection />
   <ReviewsSection />
   <FaqSection :items="faqItems" />

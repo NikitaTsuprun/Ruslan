@@ -238,7 +238,7 @@ onBeforeUnmount(() => {
             </picture>
             <figcaption class="hero-portrait__id">
               <strong>Руслан Ганеев</strong>
-              <span>юрист · разблокировка по 115-ФЗ и 161-ФЗ</span>
+              <span>юрист · разблокировка по 115-ФЗ, 161-ФЗ и ДБО</span>
             </figcaption>
           </figure>
 
@@ -254,7 +254,7 @@ onBeforeUnmount(() => {
             </div>
 
             <div class="hero-badge hero-badge--case">
-              <span class="hero-badge__num">3 дня</span>
+              <span class="hero-badge__num">5 дней</span>
               <small>средний срок ответа банка</small>
             </div>
 

@@ -20,7 +20,7 @@ const advantages = [
   {
     icon: svg('<path d="M4 9.5L12 4l8 5.5"/><path d="M5 9.8v8.7M19 9.8v8.7M9.3 9.8v8.7M14.7 9.8v8.7M3.3 18.8h17.4"/>'),
     title: 'Работаю со всеми банками',
-    text: 'Сбербанк, Т-Банк, Альфа-Банк, ВТБ, Озон Банк и другие — знаю требования каждого банка.',
+    text: 'Сбербанк, Т-Банк, Альфа-Банк, ВТБ, Озон Банк и другие — знаю специфику каждого банка.',
   },
   {
     icon: svg('<circle cx="12" cy="12" r="8.5"/><path d="M8.3 12.3l2.6 2.6 4.8-5.4"/>'),
@@ -40,7 +40,7 @@ const advantages = [
 ]
 
 const facts = [
-  { strong: '115-ФЗ и 161-ФЗ', sub: 'профильная специализация' },
+  { strong: '115-ФЗ, 161-ФЗ и ДБО', sub: 'профильная специализация' },
   { strong: 'Москва + вся РФ', sub: 'личный приём и работа онлайн' },
   { strong: 'Лично', sub: 'веду каждое дело от и до' },
 ]
@@ -70,7 +70,6 @@ useScrollAnimation(sectionRef, { mode: 'scale-in', stagger: 0.1 })
               loading="lazy"
               decoding="async"
             >
-            <figcaption>Лично веду каждое дело</figcaption>
           </figure>
 
           <div class="expert__content">

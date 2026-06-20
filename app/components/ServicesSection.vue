@@ -19,11 +19,6 @@ const services = [
     text: 'Восстанавливаю доступ к мобильному и интернет-банку, снимаю ограничения на переводы, оплату и снятие наличных.',
   },
   {
-    icon: svg('<path d="M4 6.5h9M4 12h9M4 17.5h5"/><path d="M15.8 14.3l4.4 4.4M20.2 14.3l-4.4 4.4"/>'),
-    title: 'Вывод из чёрного списка банков',
-    text: 'Исключаю из списка отказников, чтобы другие банки снова открывали вам счета и карты и не отказывали в обслуживании.',
-  },
-  {
     icon: svg('<rect x="3" y="7.5" width="18" height="12.5" rx="2.4"/><path d="M8.5 7.5V6A2.5 2.5 0 0 1 11 3.5h2A2.5 2.5 0 0 1 15.5 6v1.5"/><path d="M3 12.5h18"/>'),
     title: 'Счета ИП и юридических лиц',
     text: 'Разблокирую расчётные счета бизнеса, готовлю ответы на запросы банка по 115-ФЗ, сопровождаю проверки и снимаю ограничения по ДБО.',
@@ -68,11 +63,13 @@ useScrollAnimation(sectionRef, { mode: 'fade-up', stagger: 0.1 })
 
 <style scoped>
 .services__grid {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 18px;
 }
 .svc {
+  flex: 1 1 100%;
   position: relative;
   background: #fff;
   border: 1px solid var(--border);
@@ -114,9 +111,11 @@ useScrollAnimation(sectionRef, { mode: 'fade-up', stagger: 0.1 })
 .svc:hover .svc__link svg { transform: translateX(4px); }
 
 @media (min-width: 600px) {
-  .services__grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .services__grid { gap: 20px; }
+  .svc { flex: 0 1 calc(50% - 10px); }
 }
 @media (min-width: 960px) {
-  .services__grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .services__grid { gap: 24px; }
+  .svc { flex: 0 1 calc(33.333% - 16px); }
 }
 </style>

@@ -12,6 +12,9 @@ export default defineAppConfig({
     telegramChannel: 'https://t.me/ruslanganeev_yuristpro',
     whatsapp: '',
     email: '',
+    // Куда приходят заявки с формы (через FormSubmit.co).
+    // TODO: заменить на email заказчика, когда он его даст, — и пересобрать сайт.
+    leadEmail: 'maximbas2001@gmail.com',
     // Город / график (для блока контактов и SEO-разметки).
     city: 'Москва',
     schedule: 'Ежедневно, 09:00–21:00',

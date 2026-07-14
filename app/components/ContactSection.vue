@@ -84,7 +84,8 @@ function validate() {
 }
 
 // Заявки уходят на почту через FormSubmit.co (без сервера — работает на GitHub Pages).
-const FORM_ENDPOINT = 'https://formsubmit.co/ajax/maximbas2001@gmail.com'
+// Адрес получателя задаётся в app.config.ts → contacts.leadEmail.
+const FORM_ENDPOINT = `https://formsubmit.co/ajax/${contacts.leadEmail}`
 
 // Ловушка по времени: бот отправляет форму почти мгновенно, человек — нет.
 let formOpenedAt = 0

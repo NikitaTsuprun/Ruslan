@@ -38,7 +38,9 @@ jobs:
       - name: Generate static site
         run: npm run generate
         env:
-          NUXT_APP_BASE_URL: /Ruslan/
+          # Сайт живёт на собственном домене yuristpro1.ru (корень), поэтому base = '/'.
+          # Файл public/CNAME привязывает домен к GitHub Pages при деплое.
+          NUXT_APP_BASE_URL: /
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

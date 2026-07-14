@@ -189,6 +189,7 @@ function resetForm() {
             Первичная консультация — бесплатно и ни к чему не обязывает.
           </p>
 
+          <address class="contact__contacts">
           <ul class="methods">
             <li v-for="m in methods" :key="m.label">
               <a
@@ -219,6 +220,7 @@ function resetForm() {
               <span>{{ contacts.schedule }}</span>
             </div>
           </div>
+          </address>
         </div>
 
         <div class="form-card" data-reveal-item data-scroll-mode="fade-right">
@@ -234,20 +236,23 @@ function resetForm() {
             </div>
 
             <div class="field">
-              <label for="f-name">Ваше имя <span>*</span></label>
+              <label for="f-name">Ваше имя <span aria-hidden="true">*</span></label>
               <input
                 id="f-name"
                 v-model="form.name"
                 type="text"
                 autocomplete="name"
+                aria-required="true"
+                :aria-invalid="errors.name ? 'true' : undefined"
+                :aria-describedby="errors.name ? 'err-name' : undefined"
                 placeholder="Как к вам обращаться"
                 :class="{ 'is-error': errors.name }"
               />
-              <span v-if="errors.name" class="field__err">{{ errors.name }}</span>
+              <span v-if="errors.name" id="err-name" role="alert" class="field__err">{{ errors.name }}</span>
             </div>
 
             <div class="field">
-              <label for="f-phone">Телефон <span>*</span></label>
+              <label for="f-phone">Телефон <span aria-hidden="true">*</span></label>
               <input
                 id="f-phone"
                 :value="form.phone"
@@ -255,11 +260,14 @@ function resetForm() {
                 inputmode="tel"
                 autocomplete="tel"
                 maxlength="18"
+                aria-required="true"
+                :aria-invalid="errors.phone ? 'true' : undefined"
+                :aria-describedby="errors.phone ? 'err-phone' : undefined"
                 placeholder="+7 (___) ___-__-__"
                 :class="{ 'is-error': errors.phone }"
                 @input="onPhoneInput"
               />
-              <span v-if="errors.phone" class="field__err">{{ errors.phone }}</span>
+              <span v-if="errors.phone" id="err-phone" role="alert" class="field__err">{{ errors.phone }}</span>
             </div>
 
             <div class="field">
@@ -291,10 +299,18 @@ function resetForm() {
             </div>
 
             <label class="consent" :class="{ 'is-error': errors.consent }">
-              <input v-model="form.consent" type="checkbox" />
-              <span>Я согласен на обработку персональных данных для ответа на заявку.</span>
+              <input
+                v-model="form.consent"
+                type="checkbox"
+                aria-required="true"
+                :aria-invalid="errors.consent ? 'true' : undefined"
+                :aria-describedby="errors.consent ? 'err-consent' : undefined"
+              />
+              <span>Я согласен на обработку
+                <NuxtLink to="/politika-konfidencialnosti" target="_blank" class="consent__link" @click.stop>персональных данных</NuxtLink>
+                для ответа на заявку.</span>
             </label>
-            <span v-if="errors.consent" class="field__err field__err--block">{{ errors.consent }}</span>
+            <span v-if="errors.consent" id="err-consent" role="alert" class="field__err field__err--block">{{ errors.consent }}</span>
 
             <button type="submit" class="btn btn--primary btn--block btn--lg" :disabled="loading">
               <template v-if="loading">Отправляем…</template>
@@ -304,10 +320,11 @@ function resetForm() {
               </template>
             </button>
 
-            <p v-if="serverError" class="form__status form__status--err">{{ serverError }}</p>
+            <p v-if="serverError" class="form__status form__status--err" role="alert" aria-live="assertive">{{ serverError }}</p>
 
             <p class="form__note">
-              Отправляя заявку, вы соглашаетесь с обработкой персональных данных.
+              Отправляя заявку, вы соглашаетесь с обработкой
+              <NuxtLink to="/politika-konfidencialnosti" target="_blank" class="form__note-link">персональных данных</NuxtLink>.
               Консультация бесплатна и ни к чему не обязывает.
             </p>
           </form>
@@ -473,6 +490,11 @@ function resetForm() {
 }
 .consent span { font-size: 13px; color: var(--text); }
 .consent.is-error span { color: #e5484d; }
+.consent__link { color: var(--blue-700); text-decoration: underline; }
+.form__note-link { color: var(--blue-700); text-decoration: underline; }
+
+/* Контакты в семантическом <address> — убираем курсив по умолчанию */
+.contact__contacts { font-style: normal; display: block; }
 
 .form__status {
   margin-top: 13px;

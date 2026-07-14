@@ -22,8 +22,8 @@ const navLinks = [
 ]
 
 const contactLinks = [
-  { label: contacts.phone, href: `tel:${contacts.phoneHref}`, ext: false },
-  ...socialLinks.map((link) => ({ label: link.title, href: link.href, ext: true })),
+  { key: 'phone', label: contacts.phone, href: `tel:${contacts.phoneHref}`, ext: false },
+  ...socialLinks.map((link) => ({ key: link.key, label: link.title, href: link.href, ext: true })),
 ]
 </script>
 
@@ -60,6 +60,7 @@ const contactLinks = [
             :target="c.ext ? '_blank' : null"
             :rel="c.ext ? 'noopener' : null"
             class="ftr__link"
+            @click="trackContact(c.key)"
           >{{ c.label }}</a>
         </div>
       </div>
@@ -86,6 +87,7 @@ const contactLinks = [
             rel="noopener"
             :aria-label="social.title"
             :title="social.title"
+            @click="trackContact(social.key)"
           >
             <span class="ftr__social-ic" v-html="social.icon" />
             <b v-if="social.key === 'telegramChannel'" class="ftr__social-label">канал</b>

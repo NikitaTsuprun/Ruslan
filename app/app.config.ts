@@ -16,4 +16,14 @@ export default defineAppConfig({
     city: 'Москва',
     schedule: 'Ежедневно, 09:00–21:00',
   },
+
+  // ===== Аналитика и подтверждение прав на сайт =====
+  // Заполните после регистрации сайта в соответствующих сервисах.
+  // Пустые значения = ничего не подключается (безопасно).
+  seo: {
+    yandexMetrika: '110042390', // номер счётчика Яндекс.Метрики (только цифры, напр. 99999999)
+    googleAnalytics: 'G-GWXQW9E6F6', // Measurement ID Google Analytics (вид G-XXXXXXXXXX)
+    yandexVerification: '07d7828b142d5842', // код подтверждения из Яндекс.Вебмастера (meta yandex-verification)
+    googleVerification: '', // код подтверждения из Google Search Console (meta google-site-verification)
+  },
 })

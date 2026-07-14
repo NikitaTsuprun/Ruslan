@@ -16,7 +16,7 @@ export default defineNuxtConfig({
   // Общие SEO-настройки сайта. URL замените на ваш реальный домен,
   // когда он появится — он используется в canonical, sitemap.xml и robots.txt.
   site: {
-    url: 'https://example.com',
+    url: 'https://yuristpro1.ru',
     name: 'Разблокировка карт и счетов по 115-ФЗ и 161-ФЗ — Руслан Ганеев',
     description:
       'Профессиональная помощь в разблокировке банковских карт и счетов по 115-ФЗ и 161-ФЗ. Снятие блокировки, вывод из базы ЦБ РФ, восстановление ДБО. Москва и вся Россия — дистанционно.',
@@ -34,8 +34,11 @@ export default defineNuxtConfig({
         { name: 'format-detection', content: 'telephone=yes' },
       ],
       link: [
+        { rel: 'icon', href: `${baseURL}favicon.ico`, sizes: '48x48' },
         { rel: 'icon', type: 'image/svg+xml', href: `${baseURL}favicon.svg` },
-        { rel: 'apple-touch-icon', href: `${baseURL}favicon.svg` },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: `${baseURL}favicon-32x32.png` },
+        { rel: 'icon', type: 'image/png', sizes: '16x16', href: `${baseURL}favicon-16x16.png` },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: `${baseURL}apple-touch-icon.png` },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         {

@@ -6,6 +6,7 @@ const phoneSvg =
 
 const methods = [
   {
+    key: 'phone',
     label: 'Телефон',
     value: contacts.phone,
     href: `tel:${contacts.phoneHref}`,
@@ -13,6 +14,7 @@ const methods = [
     icon: phoneSvg,
   },
   ...useSocials().map((s) => ({
+    key: s.key,
     label: s.title,
     value: s.value,
     href: s.href,
@@ -84,12 +86,24 @@ function validate() {
 // Заявки уходят на почту через FormSubmit.co (без сервера — работает на GitHub Pages).
 const FORM_ENDPOINT = 'https://formsubmit.co/ajax/maximbas2001@gmail.com'
 
+// Ловушка по времени: бот отправляет форму почти мгновенно, человек — нет.
+let formOpenedAt = 0
+onMounted(() => {
+  formOpenedAt = Date.now()
+})
+
 async function submit() {
   serverError.value = ''
   if (!validate()) return
 
   // Honeypot: скрытое поле заполняют только боты — тихо «успех», ничего не шлём.
   if (form.company.trim()) {
+    markSent()
+    return
+  }
+
+  // Слишком быстрая отправка (< 2.5 с после загрузки) — почти наверняка бот.
+  if (formOpenedAt && Date.now() - formOpenedAt < 2500) {
     markSent()
     return
   }
@@ -122,6 +136,7 @@ async function submit() {
     }
 
     if (res.success === true || res.success === 'true') {
+      reachGoal('lead') // главная конверсия для Метрики/Директа
       markSent()
     } else {
       serverError.value =
@@ -181,6 +196,7 @@ function resetForm() {
                 :style="{ '--c': m.color }"
                 :target="m.href.startsWith('http') ? '_blank' : null"
                 :rel="m.href.startsWith('http') ? 'noopener' : null"
+                @click="trackContact(m.key)"
               >
                 <span class="method__ic" v-html="m.icon" />
                 <span class="method__body">

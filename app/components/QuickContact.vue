@@ -49,6 +49,7 @@ onBeforeUnmount(() => {
             :href="c.href"
             :target="c.ext ? '_blank' : undefined"
             :rel="c.ext ? 'noopener' : undefined"
+            @click="trackContact(c.key)"
           >
             <span class="qc__item-label">{{ c.title }}</span>
             <span class="qc__item-ic" v-html="c.icon" />
